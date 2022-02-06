@@ -737,7 +737,7 @@ In this quickstart, you've deployed an existing Spring Boot-based app using Azur
 ## Credits
 
 This Spring microservices sample is forked from 
-[spring-petclinic/spring-petclinic-microservices](https://github.com/spring-petclinic/spring-petclinic-microservices) - see [Petclinic README](./README-petclinic.md). 
+[Azure Samples spring-petclinic/spring-petclinic-microservices](https://github.com/Azure-Samples/spring-petclinic-microservices) - see [Petclinic README](./README-petclinic.md). 
 
 ## Contributing
 
