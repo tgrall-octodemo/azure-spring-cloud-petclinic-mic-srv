@@ -1,6 +1,8 @@
 spring:
   cloud:
     config:
+      auto-refresh: true
+      refresh-interval: 60    
       server:
         git:
           uri: https://github.com/azure-samples/spring-petclinic-microservices-config
@@ -8,3 +10,9 @@ spring:
           search-locations: classpath:.
   profiles:
     active: native
+management:
+    endpoints:
+         web:
+          exposure:
+            include:
+              - refresh
