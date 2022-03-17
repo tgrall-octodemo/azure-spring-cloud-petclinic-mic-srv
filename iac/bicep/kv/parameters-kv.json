@@ -10,6 +10,16 @@
       },      
       "setKVAccessPolicies": {
         "value": false
-      }
+      },
+      "appsObject": {
+        "value": {
+          "apps": [
+            {
+              "appName": "noname",
+              "appIdentity": "fake-id"
+            }                        
+          ]
+        }
+      }  
     }
   }
