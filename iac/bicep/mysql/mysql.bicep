@@ -85,7 +85,7 @@ output mySQLResourceID string = mysqlserver.id
 // Add firewall config to allow Azure Spring Cloud :
 // virtualNetworkRules to Allow public access from Azure services 
 resource fwRuleAzureSpringCloudApps 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2021-05-01' = {
-  name: 'Allow Azure Spring Cloud Apps'
+  name: 'Allow-Azure-Spring-Cloud-Apps'
   parent: mysqlserver
   properties: {
     startIpAddress: startIpAddress

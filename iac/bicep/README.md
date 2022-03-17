@@ -19,6 +19,7 @@ done
 # This query returns 1 and only 1 Id: e8de9221-a19c-4c81-b814-fd37c6caf9d2
 azureSpringCloudRpAppId="$(az ad sp list --filter "displayname eq 'Azure Spring Cloud Resource Provider'" --query "[?appDisplayName=='Azure Spring Cloud Resource Provider'].appId" -o tsv | head -1)"
 
+# Check, choose a Region with AZ : https://docs.microsoft.com/en-us/azure/availability-zones/az-overview#azure-regions-with-availability-zones
 az group create --name rg-iac-kv --location westus3
 az group create --name rg-iac-asc-petclinic-mic-srv --location westus3
 
