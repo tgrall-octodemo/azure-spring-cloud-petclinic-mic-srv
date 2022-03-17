@@ -59,7 +59,7 @@ param serviceRegistryName string
 @description('The Azure Spring Cloud Config Server Git URI (The repo must be public).')
 param gitConfigURI string
 
-param buildAgentPoolName string = 'defaultBuildAgentPool'
+param buildAgentPoolName string = 'defaultJavaBuildAgentPool'
 param builderName string = 'Java-Builder'
 param buildName string = '${appName}-build'
 param buildServiceName string = '${azureSpringCloudInstanceName}/default' // '{your-service-name}/default/default'  //{your-service-name}/{build-service-name}/{agenpool-name}
@@ -74,6 +74,8 @@ resource logAnalyticsWorkspace  'Microsoft.OperationalInsights/workspaces@2020-1
 }
 output logAnalyticsWorkspaceResourceId string = logAnalyticsWorkspace.id
 
+// pre-req: https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet-bicep
+// https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet-azure-cli#prerequisites
 resource azurespringcloud 'Microsoft.AppPlatform/Spring@2022-01-01-preview' = {
   name: azureSpringCloudInstanceName
   location: location
@@ -123,9 +125,9 @@ output appInsightsConnectionString string = appInsights.properties.ConnectionStr
 resource appInsightsDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: appInsightsDiagnosticSettingsName
   scope: azurespringcloud
-  workspaceId: logAnalyticsWorkspace.id
   properties: {
     logAnalyticsDestinationType: 'AzureDiagnostics'
+    workspaceId: logAnalyticsWorkspace.id
     logs: [
       {
         category: 'ApplicationConsole'
@@ -215,6 +217,31 @@ resource adminserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' =
     }
   }
 }
+output adminServerIdentity string = adminserverapp.identity.principalId
+
+resource configserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
+  name: 'config-server'
+  location: location
+  parent: azurespringcloud
+  identity: {
+    // principalId: 'string'
+    tenantId: tenantId
+    type: 'SystemAssigned'
+    userAssignedIdentities: {}
+  }
+  properties: {
+    addonConfigs: {}
+    // fqdn: 'string'
+    httpsOnly: false
+    public: true
+    temporaryDisk: {
+      mountPath: '/tmp'
+      sizeInGB: 5
+    }
+  }
+}
+output configServerIdentity string = configserverapp.identity.principalId
+
 
 resource customersserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
   name: 'customers-service'
@@ -237,6 +264,7 @@ resource customersserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-previ
     }
   }
 }
+output customersServiceIdentity string = customersserviceapp.identity.principalId
 
 resource apigatewayapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
   name: 'api-gateway'
@@ -259,6 +287,7 @@ resource apigatewayapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = 
     }
   }
 }
+output apiGatewayIdentity string = apigatewayapp.identity.principalId
 
 resource vetsserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
   name: 'vets-service'
@@ -281,6 +310,7 @@ resource vetsserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' =
     }
   }
 }
+output vetsServiceIdentity string = vetsserviceapp.identity.principalId
 
 resource visitsservicerapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
   name: 'visits-service'
@@ -303,6 +333,7 @@ resource visitsservicerapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview
     }
   }
 }
+output visitsServiceIdentity string = visitsservicerapp.identity.principalId
 
 /*
 resource customersservicebinding 'Microsoft.AppPlatform/Spring/apps/bindings@2022-03-01-preview' = {
@@ -355,9 +386,8 @@ resource buildService 'Microsoft.AppPlatform/Spring/buildServices@2022-03-01-pre
 // https://github.com/Azure/azure-rest-api-specs/issues/18286
 resource buildService 'Microsoft.AppPlatform/Spring/buildServices@2022-03-01-preview' existing = {
   //scope: resourceGroup('my RG')
-  name: buildServiceName
+  name: buildServiceName  
 }
-
 
 resource buildagentpool 'Microsoft.AppPlatform/Spring/buildServices/agentPools@2022-03-01-preview' = {
   name: buildAgentPoolName
@@ -388,7 +418,7 @@ resource builder 'Microsoft.AppPlatform/Spring/buildServices/builders@2022-03-01
       }
     ]
     stack: {
-      id: 'tanzu-base-bionic-stack' // https://docs.pivotal.io/tanzu-buildpacks/stacks.html
+      id: 'tanzu-base-bionic-stack' // https://docs.pivotal.io/tanzu-buildpacks/stacks.html , OSS from https://github.com/paketo-buildpacks/java
       version: '1.1.49'
     }
   }
