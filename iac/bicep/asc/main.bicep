@@ -22,6 +22,9 @@ param appName string = 'petclinic${uniqueString(resourceGroup().id)}'
 param location string = 'westus'
 // param rgName string = 'rg-${appName}'
 
+@description('The Azure Spring Cloud Resource Provider ID')
+param azureSpringCloudRp string
+
 @maxLength(24)
 @description('The name of the KV, must be UNIQUE.  A vault name must be between 3-24 alphanumeric characters.')
 param kvName string // = 'kv-${appName}'
@@ -68,6 +71,21 @@ param startIpAddress string = '10.42.1.0'
 @description('Allow Azure Spring Cloud from Apps subnet to access MySQL DB')
 param endIpAddress string = '10.42.1.15'
 
+param vnetName string = 'vnet-azurespringcloud'
+param vnetCidr string = '10.42.0.0/21 '
+param appSubnetCidr string = '10.42.1.0/28'
+param serviceRuntimeSubnetCidr string = '10.42.2.0/28'
+param serviceCidr string = '10.42.3.0/28'
+param serviceRuntimeSubnetName string = 'snet-svc-run'
+param appSubnetName string = 'snet-app'
+param zoneRedundant bool = false
+
+@description('The resource group where all network resources for apps will be created in')
+param appNetworkResourceGroup string 
+
+@description('The resource group where all network resources for Azure Spring Cloud service runtime will be created in')
+param serviceRuntimeNetworkResourceGroup string 
+
 @description('The Log Analytics workspace name used by Azure Spring Cloud instance')
 param logAnalyticsWorkspaceName string = 'log-${appName}'
 
@@ -99,26 +117,14 @@ param azureSpringCloudSkuName string = 'S0'
 @description('The Azure Spring Cloud SKU Tier')
 param azureSpringCloudTier string = 'Standard'
 
-param appNetworkResourceGroup string 
-param serviceRuntimeNetworkResourceGroup string 
-param serviceCidr string = '10.42.2.0/28'
-param zoneRedundant bool = false
-
-param vnetName string = 'vnet-azurespringcloud'
-param vnetCidr string = '10.42.0.0/21 '
-param appSubnetCidr string = '10.42.1.0/28'
-param serviceRuntimeSubnetCidr string = '10.42.2.0/28'
-param serviceRuntimeSubnetName string = 'snet-svc-run'
-param appSubnetName string = 'snet-app'
-
 @description('The Azure Spring Cloud Git Config Server name')
 param configServerName string = 'Config-Server'
 
 @description('The Azure Spring Cloud monitoring Settings name')
-param monitoringSettingsName string
+param monitoringSettingsName string = 'Monitoring'
 
 @description('The Azure Spring Cloud Service Registry name')
-param serviceRegistryName string
+param serviceRegistryName string = 'Azure Spring Cloud Service Registry'
 
 @description('The Azure Spring Cloud Config Server Git URI (The repo must be public).')
 param gitConfigURI string
@@ -163,7 +169,21 @@ module mysql '../mysql/mysql.bicep' = {
   }
 }
 
-module asc 'asc.bicep' = {
+// https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scope-extension-resources
+module roleAssignments 'roleAssignments.bicep' = {
+  name: 'role-assignments'
+  params: {
+    vnetName: vnetName
+    subnetName: appSubnetName
+    kvName: kvName
+    kvRGName: kvRGName
+    networkRoleType: 'NetworkContributor'
+    kvRoleType: 'KeyVaultReader'
+    azureSpringCloudRp: azureSpringCloudRp
+  }
+}
+
+module azurespringcloud 'asc.bicep' = {
   name: 'azurespringcloud'
   // scope: resourceGroup(rg.name)
   params: {
@@ -214,7 +234,25 @@ If you created the key vault, you're the owner and have the permission.
 */
 
 
-// At this stage, must be configured: networkAcls/virtualNetworkRules to allow to Azure Spring Cloud subnetID and azureSpringCloudAppIdentity
+// Specifies all Apps Identities {"appName":"","appIdentity":""} wrapped into an object.')
+var appsObject = { 
+  apps: [
+    {
+    appName: 'customers-service'
+    appIdentity: azurespringcloud.outputs.customersServiceIdentity
+    }
+    {
+    appName: 'vets-service'
+    appIdentity: azurespringcloud.outputs.vetsServiceIdentity
+    }
+    {
+    appName: 'visits-service'
+    appIdentity: azurespringcloud.outputs.visitsServiceIdentity
+    }
+  ]
+}
+
+// allow to Azure Spring Cloud subnetID and azureSpringCloudAppIdentity
 module KeyVault '../kv/kv.bicep'= {
   name: kvName
   scope: resourceGroup(kvRGName)
@@ -225,13 +263,8 @@ module KeyVault '../kv/kv.bicep'= {
     publicNetworkAccess: publicNetworkAccess
     vNetRules: vNetRules
     setKVAccessPolicies: true
-    azureSpringCloudAppIdentity: azureSpringCloudAppIdentity
+    appsObject: appsObject
   }
-}
-
-resource kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
-  scope: resourceGroup(kvRGName)
-  name: kvName
 }
 
 // https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scenarios-secrets
@@ -244,19 +277,3 @@ module KeyVaultsecrets '../kv/kv_sec_key.bicep'= {
     secretsObject: secretsObject
   }
 }
-
-
-// https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scope-extension-resources
-module roleAssignments 'roleAssignments.bicep' = {
-  name: 'role-assignments'
-  params: {
-    vnetName: vnetName
-    subnetName: appSubnetName
-    kvName: kvName
-    kvRGName: kvRGName
-    azureSpringCloudAppIdentity: azureSpringCloudAppIdentity
-    networkRoleType: 'NetworkContributor'
-    kvRoleType: 'KeyVaultReader'
-  }
-}
-
