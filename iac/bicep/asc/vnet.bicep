@@ -1,4 +1,4 @@
-param location string = 'westus3'
+param location string = 'westus2'
 
 param vnetName string = 'vnet-azure-spring-cloud'
 param vnetCidr string = '10.42.0.0/21 '
