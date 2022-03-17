@@ -1,6 +1,6 @@
 param location string = 'westus'
 
-param vnetName string = 'vnet-azurespringcloud'
+param vnetName string = 'vnet-azure-spring-cloud'
 param vnetCidr string = '10.42.0.0/21 '
 param appSubnetCidr string = '10.42.1.0/28'
 param serviceRuntimeSubnetCidr string = '10.42.2.0/28'
