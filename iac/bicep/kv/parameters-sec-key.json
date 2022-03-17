@@ -6,7 +6,7 @@
         "value": "petcliasc"
       }, 
       "kvName": {
-        "value": "kv-petcliasc-xxxUNIQUExxxIDxxx42"
+        "value": "kv-petcliasc-UNIQUEID42"
       },
       "secretsObject": {
         "value": {
