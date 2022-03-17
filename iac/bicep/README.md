@@ -1,4 +1,4 @@
-# AKS
+# Azure Spring Cloud
 
 TODO : Use [Pipelines with GitHub Actions](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-github-actions?tabs=CLI)
 ```sh
