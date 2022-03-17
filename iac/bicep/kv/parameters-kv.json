@@ -3,8 +3,11 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
       "appName": {
-        "value": "bicepiac"
+        "value": "petcliasc"
       },
+      "kvName": {
+        "value": "kv-petcliasc-xxxUNIQUExxxIDxxx42"
+      },      
       "setKVAccessPolicies": {
         "value": false
       }
