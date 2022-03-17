@@ -19,14 +19,14 @@ done
 # This query returns 1 and only 1 Id: e8de9221-a19c-4c81-b814-fd37c6caf9d2
 azureSpringCloudRpAppId="$(az ad sp list --filter "displayname eq 'Azure Spring Cloud Resource Provider'" --query "[?appDisplayName=='Azure Spring Cloud Resource Provider'].appId" -o tsv | head -1)"
 
-az group create --name rg-iac-kv --location westus
-az group create --name rg-iac-asc-petclinic-mic-srv --location westus
+az group create --name rg-iac-kv --location westus3
+az group create --name rg-iac-asc-petclinic-mic-srv --location westus3
 
 az deployment group create --name iac-101-kv -f ./kv/kv.bicep -g rg-iac-kv \
     --parameters @./kv/parameters-kv.json
-    
+
 az deployment group create --name iac-101-asc -f ./asc/main.bicep -g rg-iac-asc-petclinic-mic-srv \
-    --parameters @./asc/parameters.json
+    --parameters @./asc/parameters.json # --what-if
 
 
 

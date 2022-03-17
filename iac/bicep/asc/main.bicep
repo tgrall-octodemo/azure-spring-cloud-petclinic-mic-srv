@@ -19,7 +19,7 @@
 // to get a unique name each time ==> param appName string = 'demo${uniqueString(resourceGroup().id, deployment().name)}'
 param appName string = 'petclinic${uniqueString(resourceGroup().id)}'
 
-param location string = 'westus'
+param location string = 'westus3'
 // param rgName string = 'rg-${appName}'
 
 @description('The Azure Spring Cloud Resource Provider ID')
