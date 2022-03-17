@@ -71,7 +71,7 @@ param startIpAddress string = '10.42.1.0'
 @description('Allow Azure Spring Cloud from Apps subnet to access MySQL DB')
 param endIpAddress string = '10.42.1.15'
 
-param vnetName string = 'vnet-azurespringcloud'
+param vnetName string = 'vnet-azure-spring-cloud'
 param vnetCidr string = '10.42.0.0/21 '
 param appSubnetCidr string = '10.42.1.0/28'
 param serviceRuntimeSubnetCidr string = '10.42.2.0/28'
@@ -181,6 +181,9 @@ module roleAssignments 'roleAssignments.bicep' = {
     kvRoleType: 'KeyVaultReader'
     azureSpringCloudRp: azureSpringCloudRp
   }
+  dependsOn: [
+    vnet
+  ]  
 }
 
 module azurespringcloud 'asc.bicep' = {
@@ -264,7 +267,7 @@ module KeyVault '../kv/kv.bicep'= {
     vNetRules: vNetRules
     setKVAccessPolicies: true
     appsObject: appsObject
-  }
+  } 
 }
 
 // https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scenarios-secrets
