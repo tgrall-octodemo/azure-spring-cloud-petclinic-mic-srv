@@ -27,7 +27,7 @@ az deployment group create --name iac-101-kv -f ./kv/kv.bicep -g rg-iac-kv \
     --parameters @./kv/parameters-kv.json
 
 az deployment group create --name iac-101-asc -f ./asc/main.bicep -g rg-iac-asc-petclinic-mic-srv \
-    --parameters @./asc/parameters.json # --what-if
+    --parameters @./asc/parameters.json # --what-if to test like a dry-run
 
 
 
