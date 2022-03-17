@@ -16,8 +16,11 @@ param kvName string = 'kv-${appName}'
 
 param setKVAccessPolicies bool = false
 
-@description('The Azure Spring Cloud App Identity')
-param azureSpringCloudAppIdentity string
+@description('The Azure Spring Cloud Apps Identities {"appName":"","appIdentity":""} wrapped into an object.')
+// param azureSpringCloudAppIdentity string
+// Specifies all Apps Identities {"appName":"","appIdentity":""} wrapped into an object.')
+param appsObject object
+
 
 @description('The KV location')
 param location string = resourceGroup().location
@@ -79,17 +82,16 @@ resource kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
 output keyVault object = kv
 
 
-// TODO : from Pipeline get azureSpringCloudIdentity objectId
-// https://codingwithtaz.blog/2021/09/08/azure-pipelines-deploy-aks-with-bicep/
 // create accessPolicies https://docs.microsoft.com/en-us/azure/templates/microsoft.keyvault/vaults/accesspolicies?tabs=bicep
 // /!\ Preview feature: When enableRbacAuthorization is true in KV, the key vault will use RBAC for authorization of data actions, and the access policies specified in vault properties will be ignored
-resource kvAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-06-01-preview' = if (setKVAccessPolicies) {
+// https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/loops#loop-with-condition
+resource kvAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-06-01-preview' = [ for app in appsObject.apps: if (setKVAccessPolicies) { 
   name: 'add'
   parent: kv // https://github.com/Azure/bicep/issues/5660 https://gitmetadata.com/repo/Azure/bicep/issues/4756
   properties: {
     accessPolicies: [
       {
-        objectId: azureSpringCloudAppIdentity
+        objectId: app.appIdentity
         tenantId: tenantId
         permissions: {
           certificates: [
@@ -110,4 +112,4 @@ resource kvAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-06-01-p
       }
     ]
   }
-}
+}]
