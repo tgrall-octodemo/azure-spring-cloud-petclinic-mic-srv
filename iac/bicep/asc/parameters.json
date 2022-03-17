@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "appName": {
+        "value": "petcliasc"
+      }, 
+      "kvName": {
+        "value": "kv-petclinic-asc42"
+      },
+      "kvRGName": {
+        "value": "rg-petclinic"
+      },      
+      "location": {
+        "value": "westus"
+      },       
+      "xxx": {
+        "value": "xxx"
+      },               
+      "xxx": {
+        "value": "xxx"
+      }, 
+      "xxx": {
+        "value": "xxx"
+      },         
+      "xxx": {
+        "value": "xxx"
+      },         
+      "xxx": {
+        "value": "xxx"
+      },         
+      "xxx": {
+        "value": "v"
+      },
+      "administratorLogin": {
+        "value": "mys_adm"
+      },
+      "administratorLoginPassword": {
+        "value": "IsTrator42!"
+      }          
+    }
+  }
