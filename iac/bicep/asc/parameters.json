@@ -6,7 +6,7 @@
         "value": "petcliasc"
       },
       "location": {
-        "value": "westus"
+        "value": "westus3"
       },       
       "azureSpringCloudRp": {
         "value": "d2531223-68f9-459e-b225-5592f90d145e"
@@ -61,7 +61,7 @@
         "value": "10.42.1.15"
       },
       "vnetName": {
-        "value": "vnet-azurespringcloud"
+        "value": "vnet-azure-spring-cloud"
       },
       "vnetCidr": {
         "value": "10.42.0.0/21"
