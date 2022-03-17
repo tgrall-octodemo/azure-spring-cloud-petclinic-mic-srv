@@ -1,5 +1,3 @@
-param acrName string
-
 @allowed([
   'Owner'
   'Contributor'
@@ -8,13 +6,6 @@ param acrName string
 ])
 @description('VNet Built-in role to assign')
 param networkRoleType string
-
-@allowed([
-  'AcrPull'
-  'AcrPush'
-])
-@description('ACR Built-in role to assign')
-param acrRoleType string
 
 @allowed([
   'KeyVaultAdministrator'
@@ -34,12 +25,12 @@ param kvRGName string
 @description('The Azure Spring Cloud Resource Provider ID')
 param azureSpringCloudRp string
 
-resource aksSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: '${vnetName}/${subnetName}'
+resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
+  name: vnetName
 }
 
-resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
-  name: acrName
+resource appSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
+  name: '${vnetName}/${subnetName}'
 }
 
 resource kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
@@ -59,37 +50,14 @@ var role = {
   KeyVaultSecretsUser: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'
 }
 
-// You need Key Vault Administrator permission to be able to see the Keys/Secrets/Certificates in the Azure Portal
-
-resource KVAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(kv.id, kvRoleType , subscription().subscriptionId)
-  properties: {
-    roleDefinitionId: role[kvRoleType]
-    principalId: XXX ???
-    principalType: 'ServicePrincipal'
-  }
-}
-
-// https://github.com/Azure/azure-quickstart-templates/blob/master/modules/Microsoft.ManagedIdentity/user-assigned-identity-role-assignment/1.0/main.bicep
-// https://github.com/Azure/bicep/discussions/5276
-// Assign ManagedIdentity ID to the "Network contributor" role to AKS VNet
-resource AKSClusterRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(aksSubnet.id, networkRoleType , aksPrincipalId)
-  scope: aksSubnet
+// https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet-azure-cli#prerequisites
+// The Azure Spring Cloud Resource Provider requires Owner permission to your virtual network in order to grant a dedicated and dynamic service principal on the virtual network for further deployment and maintenance
+resource AzureSpringCloudRpRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(appSubnet.id, networkRoleType , azureSpringCloudRp)
+  scope: vnet
   properties: {
     roleDefinitionId: role[networkRoleType] // subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
-    principalId: XXX ???
-    principalType: 'ServicePrincipal'
-  }
-}
-
- // acrpull role to assign to the AKS identity: az role assignment create --assignee $sp_id --role acrpull --scope $acr_registry_id
-resource ACRRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(acr.id, acrRoleType , aksPrincipalId)
-  scope: acr
-  properties: {
-    roleDefinitionId: role[acrRoleType]
-    principalId: XXX ???
+    principalId: azureSpringCloudRp
     principalType: 'ServicePrincipal'
   }
 }
