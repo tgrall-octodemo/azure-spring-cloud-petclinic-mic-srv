@@ -6,7 +6,7 @@
         "value": "petcliasc"
       },
       "location": {
-        "value": "westus2"
+        "value": "northeurope"
       },       
       "azureSpringCloudRp": {
         "value": "d2531223-68f9-459e-b225-5592f90d145e"
@@ -73,7 +73,7 @@
         "value": "10.42.2.0/28"
       },
       "serviceCidr": {
-        "value": "10.42.3.0/28"
+        "value": "10.0.0.0/16,10.1.0.0/16,10.2.0.1/16"
       },
       "serviceRuntimeSubnetName": {
         "value": "snet-svc-run"
