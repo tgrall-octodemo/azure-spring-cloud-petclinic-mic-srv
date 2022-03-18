@@ -112,7 +112,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     Application_Type: 'web'
     Flow_Type: 'Bluefield'
     // ImmediatePurgeDataOn30Days: true // "ImmediatePurgeDataOn30Days cannot be set on current api-version"
-    IngestionMode: 'ApplicationInsightsWithDiagnosticSettings'
+    IngestionMode: 'LogAnalytics' // Cannot set ApplicationInsightsWithDiagnosticSettings as IngestionMode on consolidated application 
     Request_Source: 'rest'
     RetentionInDays: 30
     SamplingPercentage: 20
@@ -380,7 +380,7 @@ resource buildService 'Microsoft.AppPlatform/Spring/buildServices@2022-03-01-pre
 }
 
 // https://github.com/Azure/azure-rest-api-specs/issues/18286
-// Feature BuildService is not supported in Sku S0
+// Feature BuildService is not supported in Sku S0: https://github.com/MicrosoftDocs/azure-docs/issues/89924
 resource buildService 'Microsoft.AppPlatform/Spring/buildServices@2022-03-01-preview' existing = {
   //scope: resourceGroup('my RG')
   name: buildServiceName  
