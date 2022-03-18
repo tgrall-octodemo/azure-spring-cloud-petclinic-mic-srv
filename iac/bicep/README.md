@@ -20,14 +20,14 @@ done
 azureSpringCloudRpAppId="$(az ad sp list --filter "displayname eq 'Azure Spring Cloud Resource Provider'" --query "[?appDisplayName=='Azure Spring Cloud Resource Provider'].appId" -o tsv | head -1)"
 
 # Check, choose a Region with AZ : https://docs.microsoft.com/en-us/azure/availability-zones/az-overview#azure-regions-with-availability-zones
-az group create --name rg-iac-kv --location westus2
-az group create --name rg-iac-asc-petclinic-mic-srv --location westus2
+az group create --name rg-iac-kv --location northeurope
+az group create --name rg-iac-asc-petclinic-mic-srv --location northeurope
 
 az deployment group create --name iac-101-kv -f ./kv/kv.bicep -g rg-iac-kv \
     --parameters @./kv/parameters-kv.json
 
 az deployment group create --name iac-101-asc -f ./asc/main.bicep -g rg-iac-asc-petclinic-mic-srv \
-    --parameters @./asc/parameters.json # --what-if to test like a dry-run
+    --parameters @./asc/parameters.json --debug # --what-if to test like a dry-run
 
 
 
