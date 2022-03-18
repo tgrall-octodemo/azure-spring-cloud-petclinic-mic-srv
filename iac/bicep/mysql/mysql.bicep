@@ -23,7 +23,7 @@ param startIpAddress string
 param endIpAddress string
 
 var serverName = '${appName}'
-var databaseSkuName = 'Standard_B1ms ' //  'GP_Gen5_2' for single server
+var databaseSkuName = 'Standard_B1ms' //  'GP_Gen5_2' for single server
 var databaseSkuTier = 'Burstable' // 'GeneralPurpose'
 var mySqlVersion = '5.7' // https://docs.microsoft.com/en-us/azure/mysql/concepts-supported-versions
 
