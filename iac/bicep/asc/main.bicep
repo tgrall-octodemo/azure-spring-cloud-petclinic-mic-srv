@@ -73,9 +73,15 @@ param endIpAddress string = '10.42.1.15'
 
 param vnetName string = 'vnet-azure-spring-cloud'
 param vnetCidr string = '10.42.0.0/21 '
+
+@description('The name or ID of an existing subnet in "vnet" into which to deploy the Spring Cloud app. Required when deploying into a Virtual Network. Smaller subnet sizes are supported, please refer: https://aka.ms/azure-spring-cloud-smaller-subnet-vnet-docs.')
 param appSubnetCidr string = '10.42.1.0/28'
+
+@description('The name or ID of an existing subnet in "vnet" into which to deploy the Spring Cloud service runtime. Required when deploying into a Virtual Network.')
 param serviceRuntimeSubnetCidr string = '10.42.2.0/28'
-param serviceCidr string = '10.42.3.0/28'
+
+@description('Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Cloud infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges. Addresses 10.2.0.0/16 matching the format *.*.*.0 or *.*.*.255 are reserved and cannot be used')
+param serviceCidr string = '10.0.0.1/16,10.1.0.1/16,10.2.0.1/16' // Addresses 10.2.0.0/16 matching the format *.*.*.0 or *.*.*.255 are reserved and cannot be used
 param serviceRuntimeSubnetName string = 'snet-svc-run'
 param appSubnetName string = 'snet-app'
 param zoneRedundant bool = false
@@ -123,8 +129,11 @@ param configServerName string = 'Config-Server'
 @description('The Azure Spring Cloud monitoring Settings name')
 param monitoringSettingsName string = 'Monitoring'
 
-@description('The Azure Spring Cloud Service Registry name')
-param serviceRegistryName string = 'Azure Spring Cloud Service Registry'
+@description('The Azure Spring Cloud Service Registry name. only "default" is supported')
+@allowed([
+  'default'
+])
+param serviceRegistryName string = 'default' // The resource name 'Azure Spring Cloud Service Registry' is not valid
 
 @description('The Azure Spring Cloud Config Server Git URI (The repo must be public).')
 param gitConfigURI string
@@ -155,6 +164,22 @@ module vnet 'vnet.bicep' = {
   }   
 }
 
+// https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scope-extension-resources
+module roleAssignments 'roleAssignments.bicep' = {
+  name: 'role-assignments'
+  params: {
+    vnetName: vnetName
+    subnetName: appSubnetName
+    kvName: kvName
+    kvRGName: kvRGName
+    networkRoleType: 'Owner'
+    kvRoleType: 'KeyVaultReader'
+    azureSpringCloudRp: azureSpringCloudRp
+  }
+  dependsOn: [
+    vnet
+  ]  
+}
 
 module mysql '../mysql/mysql.bicep' = {
   name: 'mysqldb'
@@ -169,22 +194,6 @@ module mysql '../mysql/mysql.bicep' = {
   }
 }
 
-// https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scope-extension-resources
-module roleAssignments 'roleAssignments.bicep' = {
-  name: 'role-assignments'
-  params: {
-    vnetName: vnetName
-    subnetName: appSubnetName
-    kvName: kvName
-    kvRGName: kvRGName
-    networkRoleType: 'NetworkContributor'
-    kvRoleType: 'KeyVaultReader'
-    azureSpringCloudRp: azureSpringCloudRp
-  }
-  dependsOn: [
-    vnet
-  ]  
-}
 
 module azurespringcloud 'asc.bicep' = {
   name: 'azurespringcloud'
