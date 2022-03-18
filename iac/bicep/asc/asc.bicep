@@ -53,8 +53,11 @@ param configServerName string
 @description('The Azure Spring Cloud monitoring Settings name')
 param monitoringSettingsName string
 
-@description('The Azure Spring Cloud Service Registry name')
-param serviceRegistryName string
+@description('The Azure Spring Cloud Service Registry name. only "default" is supported')
+@allowed([
+  'default'
+])
+param serviceRegistryName string = 'default' // The resource name 'Azure Spring Cloud Service Registry' is not valid
 
 @description('The Azure Spring Cloud Config Server Git URI (The repo must be public).')
 param gitConfigURI string
@@ -108,7 +111,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     Application_Type: 'web'
     Flow_Type: 'Bluefield'
-    ImmediatePurgeDataOn30Days: true
+    // ImmediatePurgeDataOn30Days: true // "ImmediatePurgeDataOn30Days cannot be set on current api-version"
     IngestionMode: 'ApplicationInsightsWithDiagnosticSettings'
     Request_Source: 'rest'
     RetentionInDays: 30
@@ -204,7 +207,6 @@ resource adminserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' =
     // principalId: 'string'
     tenantId: tenantId
     type: 'SystemAssigned'
-    userAssignedIdentities: {}
   }
   properties: {
     addonConfigs: {}
@@ -227,7 +229,6 @@ resource configserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' 
     // principalId: 'string'
     tenantId: tenantId
     type: 'SystemAssigned'
-    userAssignedIdentities: {}
   }
   properties: {
     addonConfigs: {}
@@ -251,7 +252,6 @@ resource customersserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-previ
     // principalId: 'string'
     tenantId: tenantId
     type: 'SystemAssigned'
-    userAssignedIdentities: {}
   }
   properties: {
     addonConfigs: {}
@@ -274,7 +274,6 @@ resource apigatewayapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = 
     // principalId: 'string'
     tenantId: tenantId
     type: 'SystemAssigned'
-    userAssignedIdentities: {}
   }
   properties: {
     addonConfigs: {}
@@ -297,7 +296,6 @@ resource vetsserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' =
     // principalId: 'string'
     tenantId: tenantId
     type: 'SystemAssigned'
-    userAssignedIdentities: {}
   }
   properties: {
     addonConfigs: {}
@@ -320,7 +318,6 @@ resource visitsservicerapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview
     // principalId: 'string'
     tenantId: tenantId
     type: 'SystemAssigned'
-    userAssignedIdentities: {}
   }
   properties: {
     addonConfigs: {}
@@ -381,9 +378,9 @@ resource buildService 'Microsoft.AppPlatform/Spring/buildServices@2022-03-01-pre
     }
   }
 }
-*/
 
 // https://github.com/Azure/azure-rest-api-specs/issues/18286
+// Feature BuildService is not supported in Sku S0
 resource buildService 'Microsoft.AppPlatform/Spring/buildServices@2022-03-01-preview' existing = {
   //scope: resourceGroup('my RG')
   name: buildServiceName  
@@ -441,7 +438,7 @@ resource build 'Microsoft.AppPlatform/Spring/buildServices/builds@2022-03-01-pre
     builder
   ]
 }
-
+*/
 
 
 
