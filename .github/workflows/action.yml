@@ -81,7 +81,20 @@ jobs:
       run: |
         mvn clean package -DskipTests -Denv=cloud
 
+  pre-req:
+    needs: build
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Install Azure Spring Cloud CLI extention 
+      uses: azure/CLI@v1
+      with:
+        azcliversion:  ${{ env.AZ_CLI_VERSION }}
+        inlineScript: |
+          az provider register --namespace 'Microsoft.AppPlatform'
+          az extension add --name spring-cloud
+
   deploy:
+    needs: pre-req
     runs-on: ubuntu-latest
     steps: 
     - name: Create Deployment for ${{ env.API_GATEWAY }}
