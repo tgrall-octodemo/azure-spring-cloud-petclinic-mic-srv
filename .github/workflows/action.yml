@@ -90,18 +90,6 @@ jobs:
       with:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az provider register --namespace 'Microsoft.AppPlatform'
-          az extension add --name spring-cloud
-
-  deploy:
-    needs: pre-req
-    runs-on: ubuntu-latest
-    steps: 
-    - name: Create Deployment for ${{ env.API_GATEWAY }}
-      uses: azure/CLI@v1
-      with:
-        azcliversion:  ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
           uname -a
           sudo apt-get install jq --yes
           AZ_CREDS=${{ secrets.AZURE_CREDENTIALS }}
@@ -109,6 +97,17 @@ jobs:
           SP_PWD=echo $AZ_CREDS | jq '.clientSecret'
           TENANT_ID=echo $AZ_CREDS | jq '.tenantId'
           az login --service-principal -u ${SP_ID} -p ${SP_PWD} # --tenant ${TENANT_ID}
+          az provider register --namespace 'Microsoft.AppPlatform'
+          az extension add --name spring-cloud
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Create Deployment for ${{ env.API_GATEWAY }}
+      uses: azure/CLI@v1
+      with:
+        azcliversion:  ${{ env.AZ_CLI_VERSION }}
+        inlineScript: |
           az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.API_GATEWAY }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
     - name: Deploy api-gateway
       uses: Azure/spring-cloud-deploy@v1
