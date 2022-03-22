@@ -10,9 +10,9 @@ on: [push]
 ###################################################################################################################
 
 env:
-  AZURE_SUBSCRIPTION: 799c12ba-353c-44a1-883d-84808ebb2216 # customize this
-  SPRING_CLOUD_SERVICE: yuchensp # customize this
-  KEYVAULT: yuchenkv # customize this
+  # AZURE_SUBSCRIPTION: # this is now a secret that you should have configured in your repo
+  SPRING_CLOUD_SERVICE: asc-petcliasc # customize this
+  KEYVAULT: kv-petcliasc424 # customize this
   # ==== APPS ====:
   API_GATEWAY: api-gateway
   ADMIN_SERVER: admin-server
@@ -30,9 +30,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # environment: production // https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+    # https://github.com/marketplace/actions/azure-login
     steps:
     - name: Login with Key Vault SP
-      uses: azure/login@v1
+      uses: azure/login@v1 
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
@@ -72,7 +73,7 @@ jobs:
     - name: Deploy api-gateway
       uses: Azure/spring-cloud-deploy@v1
       with:
-        azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
+        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.API_GATEWAY }}
@@ -83,7 +84,7 @@ jobs:
     - name: Deploy admin-server
       uses:  Azure/spring-cloud-deploy@v1
       with:
-        azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
+        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.ADMIN_SERVER }}
@@ -94,7 +95,7 @@ jobs:
     - name: Deploy customers-service
       uses: Azure/spring-cloud-deploy@v1
       with:
-        azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
+        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.CUSTOMERS_SERVICE }}
@@ -110,7 +111,7 @@ jobs:
     - name: Deploy vets-service
       uses: Azure/spring-cloud-deploy@v1
       with:
-        azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
+        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.VETS_SERVICE }}
@@ -126,7 +127,7 @@ jobs:
     - name: Deploy visits-service
       uses: Azure/spring-cloud-deploy@v1
       with:
-        azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
+        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.VISITS_SERVICE }}
@@ -138,3 +139,15 @@ jobs:
         -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} \
         -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
         -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
+
+    # security hardening for self-hosted agents: https://github.com/marketplace/actions/azure-login
+    # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
+    # if the runner is self-hosted which is not github provided it is recommended to manually logout at the end of the workflow as shown below.
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.32.0
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear
