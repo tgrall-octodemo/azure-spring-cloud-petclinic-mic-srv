@@ -92,10 +92,9 @@ jobs:
         inlineScript: |
           uname -a
           jq --version
-          AZ_CREDS=${{ secrets.AZURE_CREDENTIALS }}
-          SP_ID=echo $AZ_CREDS | jq '.clientId'
-          SP_PWD=echo $AZ_CREDS | jq '.clientSecret'
-          TENANT_ID=echo $AZ_CREDS | jq '.tenantId'
+          SP_ID=$(echo ${{ secrets.AZURE_CREDENTIALS }} | jq '.clientId')
+          SP_PWD=$(echo ${{ secrets.AZURE_CREDENTIALS }} | jq '.clientSecret')
+          TENANT_ID=$(echo ${{ secrets.AZURE_CREDENTIALS }} | jq '.tenantId')
           az login --service-principal -u ${SP_ID} -p ${SP_PWD} # --tenant ${TENANT_ID}
           az provider register --namespace 'Microsoft.AppPlatform'
           az extension add --name spring-cloud
