@@ -5,7 +5,7 @@ param vnetCidr string = '10.42.0.0/21 '
 param appSubnetCidr string = '10.42.1.0/28'
 param serviceRuntimeSubnetCidr string = '10.42.2.0/28'
 param serviceRuntimeSubnetName string = 'snet-svc-run'
-param appSubnetName string = 'snet-app'
+param appSubnetName string = 'snet-app' // used for the AKS nodes
 
 // https://docs.microsoft.com/en-us/azure/spring-cloud/how-to-deploy-in-azure-virtual-network?tabs=azure-portal#virtual-network-requirements
 var serviceRuntimeSubnet = {
