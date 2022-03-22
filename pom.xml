@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.1</version>
+        <version>2.6.3</version>
     </parent>
 
     <groupId>org.springframework.samples</groupId>
     <artifactId>spring-petclinic-microservices</artifactId>
-    <version>2.5.1</version>
+    <version>2.6.3</version>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
@@ -26,11 +26,15 @@
     </modules>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <assertj.version>3.17.1</assertj.version>
+        <lombok.version>1.18.22</lombok.version>
 
-        <spring-boot.version>2.5.1</spring-boot.version>
-        <spring-cloud.version>2020.0.3</spring-cloud.version>
+        <spring-boot.version>2.6.3</spring-boot.version>
+        <spring-cloud.version>2021.0.0</spring-cloud.version>
         <chaos-monkey-spring-boot.version>2.3.10</chaos-monkey-spring-boot.version>
 
         <docker.image.prefix>springcommunity</docker.image.prefix>
@@ -54,6 +58,12 @@
                 <artifactId>chaos-monkey-spring-boot</artifactId>
                 <version>${chaos-monkey-spring-boot.version}</version>
             </dependency>
+            <!-- https://docs.spring.io/spring-boot/docs/2.6.3/reference/html/actuator.html#actuator.enabling -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>            
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
@@ -114,6 +124,12 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin/blob/master/docs/using-the-plugin.md -->
+                            <excludeProperties>
+                                <excludeProperty>git.user.*</excludeProperty>
+                                <excludeProperty>git.build.user.*</excludeProperty>
+                                <excludeProperty>git.commit.user.*</excludeProperty>
+                            </excludeProperties>                        
                             <verbose>true</verbose>
                             <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
                             <generateGitPropertiesFile>true</generateGitPropertiesFile>
