@@ -5,9 +5,23 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - azure
+      - main
+      - master
+      - '2.5.1'
+      - '2.6.3'
+      - enterprise
+      - 'releases/**'    
   pull_request:
-    branches: [ master ]
+    branches:
+      - azure
+      - main
+      - master
+      - '2.5.1'
+      - '2.6.3'
+      - enterprise
+      - 'releases/**'
 
 jobs:
   build:
