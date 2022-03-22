@@ -1,6 +1,14 @@
 name: Deploy to Azure Spring Cloud with Key Vault
 on: [push]
 
+###################################################################################################################
+#
+#
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
+#
+###################################################################################################################
+
 env:
   AZURE_SUBSCRIPTION: 799c12ba-353c-44a1-883d-84808ebb2216 # customize this
   SPRING_CLOUD_SERVICE: yuchensp # customize this
@@ -21,6 +29,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # environment: production // https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     steps:
     - name: Login with Key Vault SP
       uses: azure/login@v1
