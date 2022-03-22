@@ -91,7 +91,7 @@ jobs:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
           uname -a
-          sudo apt-get install jq --yes
+          apt-get install jq --yes
           AZ_CREDS=${{ secrets.AZURE_CREDENTIALS }}
           SP_ID=echo $AZ_CREDS | jq '.clientId'
           SP_PWD=echo $AZ_CREDS | jq '.clientSecret'
