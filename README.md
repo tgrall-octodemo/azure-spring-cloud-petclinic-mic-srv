@@ -530,9 +530,9 @@ srw-rw---- 1 root docker 0 Mar 23 17:10 /var/run/docker.sock=
 ```
 
 ```sh
-less /etc/passwd | grep -i "username"
+less /etc/passwd | grep -i "<your username>"
 less /etc/group | grep -i "docker"
-sudo usermod -a -G docker username
+sudo usermod -a -G docker <your username>
 
 # https://gist.github.com/didof/be97b600ba3f9d1725b8c6d1c643c745
 # to apply changes, log in and out
@@ -623,11 +623,11 @@ az spring-cloud app deployment create --name production --app admin-server -s as
 # This query is wrong but should returns as many instance-count as decleared at app deployment creation : 3
 appInstances="$(az spring-cloud app show --name admin-server -g rg-iac-asc-petclinic-mic-srv --service asc-petcliasc --query "[?properties.activeDeployment.name=='production'].properties.activeDeployment.properties.instances.name" -o tsv | head -1)"
 
-az spring-cloud app logs --name admin-server \
+az spring-cloud app logs --name api-gateway \
                          --resource-group rg-iac-asc-petclinic-mic-srv \
                          --service asc-petcliasc \
                          --deployment production \
-                         --instance admin-server-production-12-5fb7ffbd7d-wljft \
+                         --instance api-gateway-production-11-6d868bb6fd-k5jzt \
                          --limit 2048 \
                          --lines 100 \
                          --since 60m
@@ -635,7 +635,7 @@ az spring-cloud app logs --name admin-server \
 
 az spring-cloud app deploy --name admin-server --artifact-path spring-petclinic-admin-server/target/spring-petclinic-admin-server-2.6.3.jar --jvm-options="-Xms512m -Xmx512m -Dspring.profiles.active=mysql" -g rg-iac-asc-petclinic-mic-srv --service asc-petcliasc --verbose
 
-az spring-cloud app show --name admin-server -g rg-iac-asc-petclinic-mic-srv --service asc-petcliasc
+az spring-cloud app show --name api-gateway -g rg-iac-asc-petclinic-mic-srv --service asc-petcliasc
 
 az spring-cloud app logs --name admin-server --resource-group rg-iac-asc-petclinic-mic-srv --service asc-petcliasc --deployment production --instance admin-server-production-12-7c4c79b658-8bvfb --limit 2048 --lines 100 --since 60m
 
