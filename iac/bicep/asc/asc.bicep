@@ -24,7 +24,7 @@ param azureSpringCloudInstanceName string = 'asc-${appName}'
 @maxValue(25)
 param azureSpringCloudSkuCapacity int = 25
 
-@description('The Azure Spring Cloud SKU name')
+@description('The Azure Spring Cloud SKU name. Check it out at https://docs.microsoft.com/en-us/rest/api/azurespringcloud/skus/list#code-try-0')
 @allowed([
   'BO'
   'S0'
@@ -37,7 +37,7 @@ param azureSpringCloudSkuName string = 'S0'
   'Standard'
   'Enterprise'
 ])
-@description('The Azure Spring Cloud SKU Tier')
+@description('The Azure Spring Cloud SKU Tier. Check it out at https://docs.microsoft.com/en-us/rest/api/azurespringcloud/skus/list#code-try-0')
 param azureSpringCloudTier string = 'Standard'
 
 param appNetworkResourceGroup string 
@@ -170,19 +170,6 @@ resource appInsightsDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@20
   }
 }
 
-resource azurespringcloudconfigserver 'Microsoft.AppPlatform/Spring/configServers@2022-01-01-preview' = {
-  name: configServerName
-  parent: azurespringcloud
-  properties: {
-    configServer: {
-      gitProperty: {
-        uri: gitConfigURI
-      }
-    }
-
-  }
-}
-
 resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2022-01-01-preview' = {
   name: monitoringSettingsName
   parent: azurespringcloud
@@ -193,12 +180,29 @@ resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monito
   }
 }
 
-resource azurespringcloudserviceregistry 'Microsoft.AppPlatform/Spring/serviceRegistries@2022-01-01-preview' = {
-  name: serviceRegistryName
-  parent: azurespringcloud
-}
-
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.appplatform/spring/apps?tabs=bicep
+resource discoveryserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
+  name: 'discovery-server'
+  location: location
+  parent: azurespringcloud
+  identity: {
+    // principalId: 'string'
+    tenantId: tenantId
+    type: 'SystemAssigned'
+  }
+  properties: {
+    addonConfigs: {}
+    // fqdn: 'string'
+    httpsOnly: false
+    public: true
+    temporaryDisk: {
+      mountPath: '/tmp'
+      sizeInGB: 5
+    }
+  }
+}
+output discoveryServerIdentity string = discoveryserverapp.identity.principalId
+
 resource adminserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
   name: 'admin-server'
   location: location
@@ -332,7 +336,21 @@ resource visitsservicerapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview
 }
 output visitsServiceIdentity string = visitsservicerapp.identity.principalId
 
+resource azurespringcloudconfigserver 'Microsoft.AppPlatform/Spring/configServers@2022-01-01-preview' = {
+  name: configServerName
+  parent: azurespringcloud
+  properties: {
+    configServer: {
+      gitProperty: {
+        uri: gitConfigURI
+      }
+    }
+
+  }
+}
+
 /*
+
 resource customersservicebinding 'Microsoft.AppPlatform/Spring/apps/bindings@2022-03-01-preview' = {
   name: 'customers-service MySQL DB Binding'
   parent: customersserviceapp
@@ -415,7 +433,7 @@ resource builder 'Microsoft.AppPlatform/Spring/buildServices/builders@2022-03-01
       }
     ]
     stack: {
-      id: 'tanzu-base-bionic-stack' // https://docs.pivotal.io/tanzu-buildpacks/stacks.html , OSS from https://github.com/paketo-buildpacks/java
+      id: 'tanzu-base-bionic-stack' // io.buildpacks.stacks.bionic-base  https://docs.pivotal.io/tanzu-buildpacks/stacks.html , OSS from https://github.com/paketo-buildpacks/java
       version: '1.1.49'
     }
   }
@@ -444,7 +462,11 @@ resource build 'Microsoft.AppPlatform/Spring/buildServices/builds@2022-03-01-pre
 
 /* requires enterprise Tier: https://azure.microsoft.com/en-us/pricing/details/spring-cloud/
 
-
+// https://github.com/MicrosoftDocs/azure-docs/issues/89924
+resource azurespringcloudserviceregistry 'Microsoft.AppPlatform/Spring/serviceRegistries@2022-01-01-preview' = {
+  name: serviceRegistryName
+  parent: azurespringcloud
+}
 
 
 resource azurespringcloudapiportal 'Microsoft.AppPlatform/Spring/apiPortals@2022-01-01-preview' = {
