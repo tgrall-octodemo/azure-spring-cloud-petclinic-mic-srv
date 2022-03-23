@@ -101,7 +101,7 @@ jobs:
         ls -al
       # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
 
-    - name: Archive Jar artifacts
+    - name: Archive ADMIN-SERVER Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.ADMIN_SERVER }}
@@ -109,15 +109,7 @@ jobs:
            ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }}
         retention-days: 5
 
-    - name: Archive Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.API_GATEWAY }}
-        path: |
-           ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
-        retention-days: 5
-
-    - name: Archive Jar artifacts
+    - name: Archive CONFIG-SERVER Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.CONFIG_SERVER }}
@@ -125,7 +117,23 @@ jobs:
            ${{ github.workspace }}/${{ env.CONFIG_SERVER_JAR }}
         retention-days: 5
 
-    - name: Archive Jar artifacts
+    - name: Archive DISCOVERY-SERVER Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.DISCOVERY_SERVER }}
+        path: |
+           ${{ github.workspace }}/${{ env.DISCOVERY_SERVER_JAR }}
+        retention-days: 5
+
+    - name: Archive API-GATEWAY Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.API_GATEWAY }}
+        path: |
+           ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
+        retention-days: 5
+
+    - name: Archive CUSTOMERS-SERVICE Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.CUSTOMERS_SERVICE }}
@@ -133,7 +141,7 @@ jobs:
            ${{ github.workspace }}/${{ env.CUSTOMERS_SERVICE_JAR }}
         retention-days: 5
 
-    - name: Archive Jar artifacts
+    - name: Archive VETS-SERVICE Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.VETS_SERVICE }}
@@ -141,7 +149,7 @@ jobs:
            ${{ github.workspace }}/${{ env.VETS_SERVICE_JAR }}
         retention-days: 5
 
-    - name: Archive Jar artifacts
+    - name: Archive VISITS-SERVICE Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.VISITS_SERVICE }}
@@ -189,6 +197,7 @@ jobs:
 
           echo "github.workspace = ${{ github.workspace }}"
           pwd
+          ls -al /github
           ls -al /github/workspace
           ls -al /github/workspace/${{ env.ADMIN_SERVER }}
           ls -al /github/workspace/${{ env.API_GATEWAY }}
@@ -213,7 +222,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.DISCOVERY_SERVER }}
         use-staging-deployment: false
-        package: ${{ github.workspace }}/${{ env.DISCOVERY_SERVER_JAR }}
+        package: /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}  
 
     - name: Create Deployment for CONFIG-SERVER
@@ -231,7 +240,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.CONFIG_SERVER }}
         use-staging-deployment: false
-        package: ${{ github.workspace }}/${{ env.CONFIG_SERVER_JAR }}
+        package: /github/workspace/${{ env.CONFIG_SERVER }}/${{ env.CONFIG_SERVER_JAR_ARTIFACT }} 
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }} 
 
 
@@ -251,7 +260,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.ADMIN_SERVER }}
         use-staging-deployment: false
-        package: ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }}
+        package: /github/workspace/${{ env.ADMIN_SERVER }}/${{ env.ADMIN_SERVER_JAR_ARTIFACT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}   
 
     - name: Create Deployment for API_GATEWAY
