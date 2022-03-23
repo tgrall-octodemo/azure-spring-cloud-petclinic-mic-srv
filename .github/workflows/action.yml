@@ -104,7 +104,8 @@ jobs:
       with:
         creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
 
-    - name: Install Azure Spring Cloud CLI extention 
+    # Unable to prompt for extension install confirmation as no tty available. 
+    - name: Install Azure Spring Cloud CLI extention
       uses: azure/CLI@v1
       with:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
@@ -112,9 +113,10 @@ jobs:
           uname -a
           jq --version
           az provider register --namespace 'Microsoft.AppPlatform'
-          az extension add --name spring-cloud
+          az config set extension.use_dynamic_install=yes_without_prompt
+          az extension add --name spring-cloud --yes 
 
-    - name: Create Deployment for ${{ env.API_GATEWAY }}
+    - name: Create Deployment for API_GATEWAY
       uses: azure/CLI@v1
       with:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
@@ -132,7 +134,7 @@ jobs:
         package: ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
     
-    - name: Create Deployment for ${{ env.ADMIN_SERVER  }}
+    - name: Create Deployment for ADMIN_SERVER
       uses: azure/CLI@v1
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
@@ -150,7 +152,7 @@ jobs:
         package: ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}    
 
-    - name: Create Deployment for ${{ env.CUSTOMERS_SERVICE  }}
+    - name: Create Deployment for env.CUSTOMERS_SERVICE
       uses: azure/CLI@v1
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
@@ -173,7 +175,7 @@ jobs:
         -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
         -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
 
-    - name: Create Deployment for ${{ env.VETS_SERVICE  }}
+    - name: Create Deployment for env.VETS_SERVICE
       uses: azure/CLI@v1
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
@@ -196,7 +198,7 @@ jobs:
         -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
         -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"    
 
-    - name: Create Deployment for ${{ env.VISITS_SERVICE  }}
+    - name: Create Deployment for env.VISITS_SERVICE
       uses: azure/CLI@v1
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
