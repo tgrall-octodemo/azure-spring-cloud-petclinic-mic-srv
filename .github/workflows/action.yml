@@ -148,7 +148,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     steps: 
 
     # You can  download all artifacts in a workflow run by not specifying a name.
@@ -193,23 +193,12 @@ jobs:
           ls -al /github/workspace
           echo "github.workspace = ${{ github.workspace }}"
           #  No such file or directory ==> ls -al ${{ github.workspace }} ==> /home/runner/work/azure-spring-cloud-petclinic-mic-srv/azure-spring-cloud-petclinic-mic-srv
-          ls -al /github/workspace/${{ env.ADMIN_SERVER }}
-          # ls -al /github/workspace/${{ env.ADMIN_SERVER }}/target
-          
+          ls -al /github/workspace/${{ env.ADMIN_SERVER }}          
           ls -al /github/workspace/${{ env.API_GATEWAY }}
-          # ls -al /github/workspace/${{ env.API_GATEWAY }}/target
-
           ls -al /github/workspace/${{ env.CONFIG_SERVICE }}
-          # ls -al /github/workspace/${{ env.CONFIG_SERVICE }}/target
-
-          ls -al /github/workspace/${{ env.CUSTOMERS_SERVICE }}
-          # ls -al /github/workspace/${{ env.CUSTOMERS_SERVICE }}/target
-          
+          ls -al /github/workspace/${{ env.CUSTOMERS_SERVICE }}          
           ls -al /github/workspace/${{ env.VETS_SERVICE }}
-          # ls -al /github/workspace/${{ env.VETS_SERVICE }}/target
-
           ls -al /github/workspace/${{ env.VISITS_SERVICE }}
-          # ls -al /github/workspace/${{ env.VISITS_SERVICE }}/target
 
           az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.API_GATEWAY }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  /github/workspace/${{ env.API_GATEWAY }}/${{ env.API_GATEWAY_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
    
@@ -229,7 +218,7 @@ jobs:
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.ADMIN_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
+          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.ADMIN_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  /github/workspace/${{ env.ADMIN_SERVER }}/${{ env.ADMIN_SERVER_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
 
     - name: Deploy admin-server
       uses:  Azure/spring-cloud-deploy@v1
@@ -247,7 +236,7 @@ jobs:
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.CUSTOMERS_SERVICE }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  ${{ github.workspace }}/${{ env.CUSTOMERS_SERVICE_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
+          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.CUSTOMERS_SERVICE }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path /github/workspace/${{ env.CUSTOMERS_SERVICE }}/${{ env.CUSTOMERS_SERVICE_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
 
     - name: Deploy customers-service
       uses: Azure/spring-cloud-deploy@v1
@@ -270,7 +259,7 @@ jobs:
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.VETS_SERVICE }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path ${{ github.workspace }}/${{ env.VETS_SERVICE_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
+          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.VETS_SERVICE }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path /github/workspace/${{ env.VETS_SERVICE }}/${{ env.VETS_SERVICE_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
 
     - name: Deploy vets-service
       uses: Azure/spring-cloud-deploy@v1
@@ -293,7 +282,7 @@ jobs:
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.VISITS_SERVICE }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
+          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.VISITS_SERVICE }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path /github/workspace/${{ env.VISITS_SERVICE }}/${{ env.VISITS_SERVICE_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
 
     - name: Deploy visits-service
       uses: Azure/spring-cloud-deploy@v1
