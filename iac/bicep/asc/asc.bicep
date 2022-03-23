@@ -170,13 +170,12 @@ resource appInsightsDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@20
   }
 }
 
-resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2022-01-01-preview' = {
+resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2022-03-01-preview' = {
   name: monitoringSettingsName
   parent: azurespringcloud
   properties: {
-    appInsightsAgentVersions: {}
     appInsightsInstrumentationKey:  appInsights.properties.InstrumentationKey
-    appInsightsSamplingRate: 20
+    appInsightsSamplingRate: 10
   }
 }
 
