@@ -28,8 +28,6 @@ az deployment group create --name iac-101-kv -f ./kv/kv.bicep -g rg-iac-kv \
 
 az deployment group create --name iac-101-asc -f ./asc/main.bicep -g rg-iac-asc-petclinic-mic-srv \
     --parameters @./asc/parameters.json --debug # --what-if to test like a dry-run
-
-
-
-
 ```
+
+Note: you can Run a Bicep script to debug and output the results to Azure Storage, see the [doc](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-script-bicep#sample-bicep-files)
