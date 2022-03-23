@@ -19,7 +19,7 @@ env:
   CUSTOMERS_SERVICE: customers-service
   VETS_SERVICE: vets-service
   VISITS_SERVICE: visits-service
-  # ==== JARS ====:
+  # ==== JARS ====: PWD already in /home/runner/work/azure-spring-cloud-petclinic-mic-srv
   API_GATEWAY_JAR: spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-2.6.3.jar
   ADMIN_SERVER_JAR: spring-petclinic-admin-server/target/spring-petclinic-admin-server-2.6.3.jar
   CUSTOMERS_SERVICE_JAR: spring-petclinic-customers-service/target/spring-petclinic-customers-service-2.6.3.jar
@@ -67,6 +67,8 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
+    # Something to note, actions/checkout@v2 no longer sets the github workspace to the path input, which means you may need to manually set the working directory for your runs step
+    # https://github.com/actions/checkout/blob/main/adrs/0153-checkout-v2.md#path
         
     - name: Checkout your repo
       uses: actions/checkout@v2
@@ -81,6 +83,12 @@ jobs:
     - name: maven build, clean
       run: |
         mvn clean package -DskipTests -Denv=cloud
+        echo "github.workspace = ${{ github.workspace }}"
+        pwd
+        ls -al
+        ls -al ..
+      # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+
 
   deploy:
     needs: build
@@ -121,7 +129,11 @@ jobs:
       with:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.API_GATEWAY }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
+        pwd
+        echo "github.workspace = ${{ github.workspace }}"
+        ls -al
+        ls -al ..        
+        az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.API_GATEWAY }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
    
     - name: Deploy api-gateway
       uses: Azure/spring-cloud-deploy@v1
