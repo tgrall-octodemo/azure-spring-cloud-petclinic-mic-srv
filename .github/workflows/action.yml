@@ -109,7 +109,7 @@ jobs:
     - name: Archive Jar artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.API_GATEWAY}}
+        name: ${{ env.API_GATEWAY }}
         path: |
            ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
         retention-days: 5
@@ -193,14 +193,25 @@ jobs:
           ls -al /github/workspace
           echo "github.workspace = ${{ github.workspace }}"
           #  No such file or directory ==> ls -al ${{ github.workspace }} ==> /home/runner/work/azure-spring-cloud-petclinic-mic-srv/azure-spring-cloud-petclinic-mic-srv
-          ls -al /github/workspace/spring-petclinic-admin-server/target
-          ls -al /github/workspace/spring-petclinic-api-gateway/target
-          ls -al /github/workspace/spring-petclinic-config-server/target
-          ls -al /github/workspace/spring-petclinic-customers-service/target
-          ls -al /github/workspace/spring-petclinic-vets-service/target
-          ls -al /github/workspace/spring-petclinic-visits-service/target
+          ls -al /github/workspace/${{ env.ADMIN_SERVER }}
+          # ls -al /github/workspace/${{ env.ADMIN_SERVER }}/target
+          
+          ls -al /github/workspace/${{ env.API_GATEWAY }}
+          # ls -al /github/workspace/${{ env.API_GATEWAY }}/target
 
-          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.API_GATEWAY }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
+          ls -al /github/workspace/${{ env.CONFIG_SERVICE }}
+          # ls -al /github/workspace/${{ env.CONFIG_SERVICE }}/target
+
+          ls -al /github/workspace/${{ env.CUSTOMERS_SERVICE }}
+          # ls -al /github/workspace/${{ env.CUSTOMERS_SERVICE }}/target
+          
+          ls -al /github/workspace/${{ env.VETS_SERVICE }}
+          # ls -al /github/workspace/${{ env.VETS_SERVICE }}/target
+
+          ls -al /github/workspace/${{ env.VISITS_SERVICE }}
+          # ls -al /github/workspace/${{ env.VISITS_SERVICE }}/target
+
+          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.API_GATEWAY }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  /github/workspace/${{ env.API_GATEWAY }}/${{ env.API_GATEWAY_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
    
     - name: Deploy api-gateway
       uses: Azure/spring-cloud-deploy@v1
