@@ -85,10 +85,24 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps: 
-    - name: Login with Runner SP
+
+    - name: Login with Key Vault SP
       uses: azure/login@v1 
       with:
-        creds:  ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}   
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Get service SP from Key Vault
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: ${{ env.KEYVAULT }}
+        secrets: "AZURE-CREDENTIALS-FOR-SPRING"
+      id: keyvaultaction  
+    
+    - name: Login with Service SP
+      uses: azure/login@v1
+      with:
+        creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
+
     - name: Install Azure Spring Cloud CLI extention 
       uses: azure/CLI@v1
       with:
@@ -99,6 +113,7 @@ jobs:
           az account show
           az provider register --namespace 'Microsoft.AppPlatform'
           az extension add --name spring-cloud
+
   deploy:
     needs: pre-req
     runs-on: ubuntu-latest
