@@ -59,7 +59,7 @@ jobs:
       uses: Azure/get-keyvault-secrets@v1
       with:
         keyvault: ${{ env.KEYVAULT }}
-        secrets: "MYSQL-SERVER-FULL-NAME,MYSQL-DATABASE-NAME,MYSQL-SERVER-ADMIN-LOGIN-NAME,MYSQL-SERVER-ADMIN-PASSWORD"
+        secrets: "GHA-RUN-SPN-APP-ID,GHA-RUN-SPN-PWD,GHA-RUN-SPN-TNT,MYSQL-SERVER-FULL-NAME,MYSQL-DATABASE-NAME,MYSQL-SERVER-ADMIN-LOGIN-NAME,MYSQL-SERVER-ADMIN-PASSWORD"
       id: mysqlsecrets
       
     - name: Login with Service SP
@@ -85,6 +85,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps: 
+    - name: Get the GitHub Action Runner SPN from Key Vault
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: ${{ env.KEYVAULT }}
+        secrets: "GHA-RUN-SPN-APP-ID,GHA-RUN-SPN-PWD,GHA-RUN-SPN-TNT"
+      id: runnerspnsecrets
     - name: Install Azure Spring Cloud CLI extention 
       uses: azure/CLI@v1
       with:
@@ -92,11 +98,7 @@ jobs:
         inlineScript: |
           uname -a
           jq --version
-          echo "${{ secrets.AZURE_CREDENTIALS }}" > sec_az_crd
-          SP_ID=$(`cat sec_az_crd` | jq '.clientId')
-          SP_PWD=$(`cat sec_az_crd` | jq '.clientSecret')
-          TENANT_ID=$(`cat sec_az_crd` | jq '.tenantId')
-          az login --service-principal -u ${SP_ID} -p ${SP_PWD} # --tenant ${TENANT_ID}
+          az login --service-principal -u ${{ steps.runnerspnsecrets.outputs.GHA-RUN-SPN-APP-ID }} -p ${{ steps.runnerspnsecrets.outputs.GHA-RUN-SPN-PWD }} --tenant ${{ steps.runnerspnsecrets.outputs.GHA-RUN-SPN-TNT }}
           az provider register --namespace 'Microsoft.AppPlatform'
           az extension add --name spring-cloud
   deploy:
