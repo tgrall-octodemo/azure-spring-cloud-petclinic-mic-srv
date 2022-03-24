@@ -119,56 +119,49 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.ADMIN_SERVER }}
-        path: |
-           ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }}
+        path: ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }}
         retention-days: 5
 
     - name: Archive CONFIG-SERVER Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.CONFIG_SERVER }}
-        path: |
-           ${{ github.workspace }}/${{ env.CONFIG_SERVER_JAR }}
+        path: ${{ github.workspace }}/${{ env.CONFIG_SERVER_JAR }}
         retention-days: 5
 
     - name: Archive DISCOVERY-SERVER Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.DISCOVERY_SERVER }}
-        path: |
-           ${{ github.workspace }}/${{ env.DISCOVERY_SERVER_JAR }}
+        path: ${{ github.workspace }}/${{ env.DISCOVERY_SERVER_JAR }}
         retention-days: 5
 
     - name: Archive API-GATEWAY Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.API_GATEWAY }}
-        path: |
-           ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
+        path: ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
         retention-days: 5
 
     - name: Archive CUSTOMERS-SERVICE Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.CUSTOMERS_SERVICE }}
-        path: |
-           ${{ github.workspace }}/${{ env.CUSTOMERS_SERVICE_JAR }}
+        path: ${{ github.workspace }}/${{ env.CUSTOMERS_SERVICE_JAR }}
         retention-days: 5
 
     - name: Archive VETS-SERVICE Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.VETS_SERVICE }}
-        path: |
-           ${{ github.workspace }}/${{ env.VETS_SERVICE_JAR }}
+        path: ${{ github.workspace }}/${{ env.VETS_SERVICE_JAR }}
         retention-days: 5
 
     - name: Archive VISITS-SERVICE Jar artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.VISITS_SERVICE }}
-        path: |
-           ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
+        path: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
         retention-days: 5
 
   deploy:
@@ -206,7 +199,7 @@ jobs:
           uname -a
           jq --version
           az provider register --namespace 'Microsoft.AppPlatform'
-          az config set extension.use_dynamic_install=yes_without_prompt
+          # az config set extension.use_dynamic_install=yes_without_prompt
           az extension add --name spring-cloud --yes 
 
           echo "github.workspace = ${{ github.workspace }}"
@@ -231,6 +224,13 @@ jobs:
           # az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.DISCOVERY_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
           ls -al /github/workspace
           ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
+
+          echo "checking /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}"
+          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
+
+          echo "github.workspace = ${{ github.workspace }}"
+          ls -al ${{ github.workspace }}
+          
     - name: Deploy DISCOVERY-SERVER
       uses:  Azure/spring-cloud-deploy@v1
       with:
