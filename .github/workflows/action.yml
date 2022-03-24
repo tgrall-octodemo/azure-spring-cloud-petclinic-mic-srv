@@ -39,7 +39,8 @@ env:
   VISITS_SERVICE_JAR_ARTIFACT: spring-petclinic-visits-service-2.6.3.jar
 
   # ==== Azure Spring Cloud Apps Deployment params ====:
-  DEPLOYMENT_NAME: production
+  DEPLOYMENT_STAGING: true
+  DEPLOYMENT_NAME: Blue # Green
   DEPLOYMENT_RG: rg-iac-asc-petclinic-mic-srv
   DEPLOYMENT_VERSION: 2.6.3
   DEPLOYMENT_RUNTIME_VERSION: Java_11
@@ -221,7 +222,7 @@ jobs:
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.DISCOVERY_SERVER }}
-        use-staging-deployment: false
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}  
 
@@ -239,7 +240,7 @@ jobs:
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.CONFIG_SERVER }}
-        use-staging-deployment: false
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: /github/workspace/${{ env.CONFIG_SERVER }}/${{ env.CONFIG_SERVER_JAR_ARTIFACT }} 
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }} 
 
@@ -259,7 +260,7 @@ jobs:
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.ADMIN_SERVER }}
-        use-staging-deployment: false
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: /github/workspace/${{ env.ADMIN_SERVER }}/${{ env.ADMIN_SERVER_JAR_ARTIFACT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}   
 
@@ -277,7 +278,7 @@ jobs:
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.API_GATEWAY }}
-        use-staging-deployment: false
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
     
@@ -297,7 +298,7 @@ jobs:
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.VETS_SERVICE }}
-        use-staging-deployment: false
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ github.workspace }}/${{ env.VETS_SERVICE_JAR }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
@@ -320,7 +321,7 @@ jobs:
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.VISITS_SERVICE }}
-        use-staging-deployment: false
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
@@ -343,7 +344,7 @@ jobs:
         action: deploy
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.CUSTOMERS_SERVICE }}
-        use-staging-deployment: false
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ github.workspace }}/${{ env.CUSTOMERS_SERVICE_JAR }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
