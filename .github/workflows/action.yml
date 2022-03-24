@@ -214,7 +214,8 @@ jobs:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
           az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.DISCOVERY_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
-   
+          ls -al /github/workspace
+          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
     - name: Deploy DISCOVERY-SERVER
       uses:  Azure/spring-cloud-deploy@v1
       with:
