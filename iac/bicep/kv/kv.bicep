@@ -43,7 +43,13 @@ param skuName string = 'standard'
 param tenantId string = subscription().tenantId
 
 @description('The KV vNetRules')
-param vNetRules array = []
+param vNetRules array = [] 
+/*
+[
+  id: vnet.outputs.appSubnetSubnetId
+  ignoreMissingVnetServiceEndpoint: true
+]
+*/
 
 resource kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: kvName
