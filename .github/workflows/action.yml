@@ -39,8 +39,21 @@ env:
   VISITS_SERVICE_JAR_ARTIFACT: spring-petclinic-visits-service-2.6.3.jar
 
   # ==== Azure Spring Cloud Apps Deployment params ====:
+
+  # If set to true and the deployment specified by deployment-name does not exist at execution time, it will be created.
+  DEPLOYMENT_CREATE_NEW: true
+
+  # https://github.com/marketplace/actions/azure-spring-cloud#arguments
+  # Choose either Blue or Green
+  DEPLOYMENT_NAME: Blue
   DEPLOYMENT_STAGING: true
-  DEPLOYMENT_NAME: Blue # Green
+  DEPLOYMENT_ACTION: deploy
+
+  # Choose either Blue or Green
+  # DEPLOYMENT_NAME: Green
+  # DEPLOYMENT_STAGING: false
+  # DEPLOYMENT_ACTION: set-production
+  
   DEPLOYMENT_RG: rg-iac-asc-petclinic-mic-srv
   DEPLOYMENT_VERSION: 2.6.3
   DEPLOYMENT_RUNTIME_VERSION: Java_11
@@ -213,6 +226,8 @@ jobs:
       with:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
+          ls -al /github/workspace
+          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}        
           az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.DISCOVERY_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
           ls -al /github/workspace
           ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
@@ -226,6 +241,10 @@ jobs:
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}  
+        deployment-name: ${{ env.DEPLOYMENT_NAME }}
+        create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
+        version: ${{ env.DEPLOYMENT_VERSION }} 
+        runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
 
     - name: Create Deployment for CONFIG-SERVER
       uses: azure/CLI@v1
