@@ -48,7 +48,7 @@ env:
   DEPLOYMENT_MEMORY: 512Mi
   DEPLOYMENT_INSTANCE_COUNT: 3
   DEPLOYMENT_DISABLE_PROBE: false
-  DEPLOYMENT_JVM_OPTIONS: -Xms512m -Xmx1024m -Dspring.profiles.active=mysql
+  DEPLOYMENT_JVM_OPTIONS: -Xms512m -Xmx1024m -Dspring.profiles.active=mysql,key-vault,cloud -Dazure.keyvault.uri=https://kv-petcliasc424.vault.azure.net
 
   AZ_CLI_VERSION: 2.34.1
 
