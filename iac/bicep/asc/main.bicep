@@ -124,10 +124,16 @@ param azureSpringCloudSkuName string = 'S0'
 param azureSpringCloudTier string = 'Standard'
 
 @description('The Azure Spring Cloud Git Config Server name')
-param configServerName string = 'Config-Server'
+@allowed([
+  'default'
+])
+param configServerName string = 'default'
 
 @description('The Azure Spring Cloud monitoring Settings name')
-param monitoringSettingsName string = 'Monitoring'
+@allowed([
+  'default'
+])
+param monitoringSettingsName string = 'default'
 
 @description('The Azure Spring Cloud Service Registry name. only "default" is supported')
 @allowed([

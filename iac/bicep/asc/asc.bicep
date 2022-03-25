@@ -174,7 +174,7 @@ resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monito
   name: monitoringSettingsName
   parent: azurespringcloud
   properties: {
-    appInsightsInstrumentationKey:  appInsights.properties.InstrumentationKey
+    appInsightsInstrumentationKey:  appInsights.properties.ConnectionString // DO NOT USE the InstrumentationKey appInsights.properties.InstrumentationKey
     appInsightsSamplingRate: 10
   }
 }
@@ -185,8 +185,8 @@ resource discoveryserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-previe
   location: location
   parent: azurespringcloud
   identity: {
-    // principalId: 'string'
-    tenantId: tenantId
+    // principalId: 'string' is a READ-ONLY attribute
+    // tenantId: tenantId is a READ-ONLY attribute
     type: 'SystemAssigned'
   }
   properties: {
@@ -208,7 +208,7 @@ resource adminserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' =
   parent: azurespringcloud
   identity: {
     // principalId: 'string'
-    tenantId: tenantId
+    // tenantId: tenantId is a READ-ONLY attribute
     type: 'SystemAssigned'
   }
   properties: {
@@ -230,7 +230,7 @@ resource configserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' 
   parent: azurespringcloud
   identity: {
     // principalId: 'string'
-    tenantId: tenantId
+    // tenantId: tenantId is a READ-ONLY attribute
     type: 'SystemAssigned'
   }
   properties: {
@@ -253,7 +253,7 @@ resource customersserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-previ
   parent: azurespringcloud
   identity: {
     // principalId: 'string'
-    tenantId: tenantId
+    // tenantId: tenantId is a READ-ONLY attribute
     type: 'SystemAssigned'
   }
   properties: {
@@ -275,7 +275,7 @@ resource apigatewayapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = 
   parent: azurespringcloud
   identity: {
     // principalId: 'string'
-    tenantId: tenantId
+    // tenantId: tenantId is a READ-ONLY attribute
     type: 'SystemAssigned'
   }
   properties: {
@@ -297,7 +297,7 @@ resource vetsserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' =
   parent: azurespringcloud
   identity: {
     // principalId: 'string'
-    tenantId: tenantId
+    // tenantId: tenantId is a READ-ONLY attribute
     type: 'SystemAssigned'
   }
   properties: {
@@ -319,7 +319,7 @@ resource visitsservicerapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview
   parent: azurespringcloud
   identity: {
     // principalId: 'string'
-    tenantId: tenantId
+    // tenantId: tenantId is a READ-ONLY attribute
     type: 'SystemAssigned'
   }
   properties: {
