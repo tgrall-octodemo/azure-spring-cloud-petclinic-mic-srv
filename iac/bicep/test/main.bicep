@@ -13,12 +13,6 @@ param tenantId string = subscription().tenantId
 
 param zoneRedundant bool = false
 
-@description('The resource group where all network resources for apps will be created in')
-param appNetworkResourceGroup string 
-
-@description('The resource group where all network resources for Azure Spring Cloud service runtime will be created in')
-param serviceRuntimeNetworkResourceGroup string 
-
 @description('The Log Analytics workspace name used by Azure Spring Cloud instance')
 param logAnalyticsWorkspaceName string = 'log-${appName}'
 
