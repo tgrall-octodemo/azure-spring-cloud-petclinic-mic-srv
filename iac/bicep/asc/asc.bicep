@@ -68,9 +68,15 @@ param serviceRegistryName string = 'default' // The resource name 'Azure Spring 
 @description('The Azure Spring Cloud Config Server Git URI (The repo must be public).')
 param gitConfigURI string
 
-param buildAgentPoolName string = 'defaultJavaBuildAgentPool'
+@description('The Azure Spring Cloud Build Agent pool name. Only "default" is supported') // to be checked
+@allowed([
+  'default'
+])
+param buildAgentPoolName string = 'default'
 param builderName string = 'Java-Builder'
 param buildName string = '${appName}-build'
+
+@description('The Azure Spring Cloud Build service name. Only "{azureSpringCloudInstanceName}/default" is supported') // to be checked
 param buildServiceName string = '${azureSpringCloudInstanceName}/default' // '{your-service-name}/default/default'  //{your-service-name}/{build-service-name}/{agenpool-name}
 
 @description('MySQL ResourceID')
@@ -182,6 +188,7 @@ resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monito
   properties: {
     appInsightsInstrumentationKey:  appInsights.properties.ConnectionString // DO NOT USE the InstrumentationKey appInsights.properties.InstrumentationKey
     appInsightsSamplingRate: 10
+    traceEnabled: true // Indicates whether enable the trace functionality, which will be deprecated since api version 2020-11-01-preview. Please leverage appInsightsInstrumentationKey to indicate if monitoringSettings enabled or not
   }
 }
 
