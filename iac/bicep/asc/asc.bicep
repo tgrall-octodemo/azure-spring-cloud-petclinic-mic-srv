@@ -101,7 +101,7 @@ resource azurespringcloud 'Microsoft.AppPlatform/Spring@2022-01-01-preview' = {
       serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
       serviceRuntimeSubnetId: serviceRuntimeSubnetId
     }
-    zoneRedundant: zoneRedundant
+    // zoneRedundant: zoneRedundant
   }
 }
 
