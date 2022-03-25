@@ -45,12 +45,6 @@ param serviceRuntimeNetworkResourceGroup string
 
 param zoneRedundant bool = false
 
-@description('The Azure Spring Cloud Git Config Server name. Only "default" is supported')
-@allowed([
-  'default'
-])
-param configServerName string = 'default'
-
 @description('The Azure Spring Cloud monitoring Settings name. Only "default" is supported')
 @allowed([
   'default'
@@ -154,7 +148,7 @@ resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monito
   name: monitoringSettingsName
   parent: azurespringcloud
   properties: {
-    appInsightsInstrumentationKey: 'InstrumentationKey=b87334be-2d70-446b-a193-f32918ca4314;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/' // DO NOT USE the InstrumentationKey appInsights.properties.InstrumentationKey
+    appInsightsInstrumentationKey: appInsights.properties.InstrumentationKey // 'InstrumentationKey=b87334be-2d70-446b-a193-f32918ca4314;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/' // DO NOT USE the InstrumentationKey appInsights.properties.InstrumentationKey
     appInsightsSamplingRate: 10
     // traceEnabled: true Indicates whether enable the trace functionality, which will be deprecated since api version 2020-11-01-preview. Please leverage appInsightsInstrumentationKey to indicate if monitoringSettings enabled or not
   }
