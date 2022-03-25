@@ -8,22 +8,9 @@ param location string = 'centralindia '
 @description('The Azure Spring Cloud Resource Provider ID')
 param azureSpringCloudRp string
 
-@maxLength(24)
-@description('The name of the KV, must be UNIQUE.  A vault name must be between 3-24 alphanumeric characters.')
-param kvName string // = 'kv-${appName}'
-
-@description('The name of the KV RG')
-param kvRGName string
-
 @description('The Azure Active Directory tenant ID that should be used for authenticating requests to the Key Vault.')
 param tenantId string = subscription().tenantId
 
-
-
-param vnetName string = 'vnet-azure-spring-cloud'
-
-param serviceRuntimeSubnetName string = 'snet-svc-run'
-param appSubnetName string = 'snet-app'
 param zoneRedundant bool = false
 
 @description('The resource group where all network resources for apps will be created in')
@@ -63,31 +50,11 @@ param azureSpringCloudSkuName string = 'S0'
 @description('The Azure Spring Cloud SKU Tier')
 param azureSpringCloudTier string = 'Standard'
 
-@description('The Azure Spring Cloud Git Config Server name')
-@allowed([
-  'default'
-])
-param configServerName string = 'default'
-
 @description('The Azure Spring Cloud monitoring Settings name')
 @allowed([
   'default'
 ])
 param monitoringSettingsName string = 'default'
-
-// https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scope-extension-resources
-module roleAssignments 'roleAssignments.bicep' = {
-  name: 'role-assignments'
-  params: {
-    vnetName: vnetName
-    subnetName: appSubnetName
-    kvName: kvName
-    kvRGName: kvRGName
-    networkRoleType: 'Owner'
-    kvRoleType: 'KeyVaultReader'
-    azureSpringCloudRp: azureSpringCloudRp
-  }
-}
 
 module azurespringcloud 'asc.bicep' = {
   name: 'azurespringcloud'
@@ -99,15 +66,10 @@ module azurespringcloud 'asc.bicep' = {
     azureSpringCloudSkuCapacity: azureSpringCloudSkuCapacity
     azureSpringCloudSkuName: azureSpringCloudSkuName
     azureSpringCloudTier: azureSpringCloudTier
-    appNetworkResourceGroup: appNetworkResourceGroup
     monitoringSettingsName: monitoringSettingsName
-    serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     appInsightsName: appInsightsName
     appInsightsDiagnosticSettingsName: appInsightsDiagnosticSettingsName
     zoneRedundant: zoneRedundant
   }
-  dependsOn: [
-    roleAssignments
-  ]
 }

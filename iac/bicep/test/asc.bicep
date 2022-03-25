@@ -40,9 +40,6 @@ param azureSpringCloudSkuName string = 'S0'
 @description('The Azure Spring Cloud SKU Tier. Check it out at https://docs.microsoft.com/en-us/rest/api/azurespringcloud/skus/list#code-try-0')
 param azureSpringCloudTier string = 'Standard'
 
-param appNetworkResourceGroup string 
-param serviceRuntimeNetworkResourceGroup string 
-
 param zoneRedundant bool = false
 
 @description('The Azure Spring Cloud monitoring Settings name. Only "default" is supported')

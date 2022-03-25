@@ -4,39 +4,13 @@
   'NetworkContributor'
   'Reader'
 ])
+
 @description('VNet Built-in role to assign')
 param networkRoleType string
-
-@allowed([
-  'KeyVaultAdministrator'
-  'KeyVaultReader'
-  'KeyVaultSecretsUser'  
-])
-@description('KV Built-in role to assign')
-param kvRoleType string
-
-param vnetName string
-param subnetName string
-param kvName string
-
-@description('The name of the KV RG')
-param kvRGName string
 
 @description('The Azure Spring Cloud Resource Provider ID')
 param azureSpringCloudRp string
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
-  name: vnetName
-}
-
-resource appSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: '${vnetName}/${subnetName}'
-}
-
-resource kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
-  name: kvName
-  scope: resourceGroup(kvRGName)
-}
 
 // https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
 var role = {
@@ -53,7 +27,7 @@ var role = {
 // https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet-azure-cli#prerequisites
 // The Azure Spring Cloud Resource Provider requires Owner permission to your virtual network in order to grant a dedicated and dynamic service principal on the virtual network for further deployment and maintenance
 resource AzureSpringCloudRpRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(appSubnet.id, networkRoleType , azureSpringCloudRp)
+  name: guid(networkRoleType , azureSpringCloudRp)
   scope: vnet
   properties: {
     roleDefinitionId: role[networkRoleType] // subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
