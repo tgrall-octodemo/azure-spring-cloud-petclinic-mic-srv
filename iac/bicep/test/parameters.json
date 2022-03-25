@@ -10,36 +10,6 @@
       },       
       "azureSpringCloudRp": {
         "value": "d2531223-68f9-459e-b225-5592f90d145e"
-      },        
-      "kvName": {
-        "value": "kv-petcliasc-424"
-      },
-      "kvRGName": {
-        "value": "rg-iac-kv"
-      },            
-      "publicNetworkAccess": {
-        "value": "enabled"
-      }, 
-      "kvSkuName": {
-        "value": "standard"
-      },         
-       "appNetworkResourceGroup": {
-        "value": "rg-asc-apps-petclinic"
-      } ,
-      "serviceRuntimeNetworkResourceGroup": {
-        "value": "rg-asc-svc-run-petclinic"
-      },
-      "azureSpringCloudSkuCapacity": {
-        "value": 25
-      },
-      "azureSpringCloudSkuName": {
-        "value": "S0"
-      },
-      "azureSpringCloudTier": {
-        "value": "Standard"
-      },                   
-      "gitConfigURI": {
-        "value": "https://github.com/azure-samples/spring-petclinic-microservices-config"
-      }     
+      }              
     }
   }
