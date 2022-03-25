@@ -47,13 +47,19 @@ param serviceRuntimeSubnetId string
 param serviceCidr string
 param zoneRedundant bool = false
 
-@description('The Azure Spring Cloud Git Config Server name')
-param configServerName string
+@description('The Azure Spring Cloud Git Config Server name. Only "default" is supported')
+@allowed([
+  'default'
+])
+param configServerName string = 'default'
 
-@description('The Azure Spring Cloud monitoring Settings name')
-param monitoringSettingsName string
+@description('The Azure Spring Cloud monitoring Settings name. Only "default" is supported')
+@allowed([
+  'default'
+])
+param monitoringSettingsName string = 'default'
 
-@description('The Azure Spring Cloud Service Registry name. only "default" is supported')
+@description('The Azure Spring Cloud Service Registry name. Only "default" is supported')
 @allowed([
   'default'
 ])
