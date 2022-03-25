@@ -269,19 +269,57 @@ var appsObject = {
     }
   ]
 }
+  
+var accessPoliciesObject = {
+  accessPolicies: [
+    {
+      objectId: azurespringcloud.outputs.customersServiceIdentity
+      tenantId: tenantId
+      permissions: {
+        secrets: [
+          'get'
+          'list'
+        ]
+      }
+    }
+    {
+      objectId: azurespringcloud.outputs.vetsServiceIdentity
+      tenantId: tenantId
+      permissions: {
+        secrets: [
+          'get'
+          'list'
+        ]
+      }
+    }
+    {
+      objectId:  azurespringcloud.outputs.visitsServiceIdentity
+      tenantId: tenantId
+      permissions: {
+        secrets: [
+          'get'
+          'list'
+        ]
+      }
+    }
+  ]
+}
+
 
 // allow to Azure Spring Cloud subnetID and azureSpringCloudAppIdentity
 module KeyVault '../kv/kv.bicep'= {
-  name: kvName
+  name: 'KeyVault'
   scope: resourceGroup(kvRGName)
   params: {
     location: location
+    appName: appName
+    kvName: kvName
     skuName: kvSkuName
     tenantId: tenantId
     publicNetworkAccess: publicNetworkAccess
     vNetRules: vNetRules
     setKVAccessPolicies: true
-    appsObject: appsObject
+    accessPoliciesObject: accessPoliciesObject
   } 
 }
 
