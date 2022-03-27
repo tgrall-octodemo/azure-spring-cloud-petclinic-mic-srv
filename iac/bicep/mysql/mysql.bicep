@@ -66,7 +66,7 @@ resource mysqlserver 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
   properties: {
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
-    availabilityZone: '1'
+    // availabilityZone: '1'
     backup: {
       backupRetentionDays: 7
       geoRedundantBackup: 'Disabled'
