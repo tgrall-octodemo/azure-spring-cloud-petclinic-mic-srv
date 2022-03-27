@@ -11,5 +11,21 @@
       "setKVAccessPolicies": {
         "value": false
       }  
+    },
+    "accessPoliciesObject": {
+      "value": {
+          "accessPolicies": [
+            {
+              "objectId": "fakeAppIdentityId",
+              "tenantId": "tenantId",
+              "permissions": {
+                "secrets": [
+                  "get",
+                  "list"
+                ]
+              }
+            }
+          ]    
+      }
     }
   }
