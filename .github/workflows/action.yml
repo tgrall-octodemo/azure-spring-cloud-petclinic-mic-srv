@@ -166,7 +166,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest # [self-hosted, linux, x64]
     steps: 
 
     # You can  download all artifacts in a workflow run by not specifying a name.
