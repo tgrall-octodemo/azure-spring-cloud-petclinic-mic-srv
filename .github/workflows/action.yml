@@ -12,7 +12,7 @@ on: [push]
 env:
   # AZURE_SUBSCRIPTION: # this is now a secret that you should have configured in your repo
   SPRING_CLOUD_SERVICE: asc-petcliasc # customize this
-  KEYVAULT: kv-petcliasc424 # customize this
+  KEYVAULT: kv-petcliasc42 # customize this
   # ==== APPS ====:
   API_GATEWAY: api-gateway
   ADMIN_SERVER: admin-server
@@ -228,9 +228,10 @@ jobs:
           echo "checking /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}"
           ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
 
-          echo "github.workspace = ${{ github.workspace }}"
-          ls -al ${{ github.workspace }}
-
+          # echo "github.workspace = ${{ github.workspace }}"
+          # ls -al ${{ github.workspace }}
+          echo "pwd"
+          pwd
     - name: Deploy DISCOVERY-SERVER
       uses:  Azure/spring-cloud-deploy@v1
       with:
@@ -239,7 +240,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.DISCOVERY_SERVER }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: ${{ github.workspace }}/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
+        package: /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}  
         deployment-name: ${{ env.DEPLOYMENT_NAME }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
