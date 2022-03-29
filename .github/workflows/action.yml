@@ -61,7 +61,7 @@ env:
   DEPLOYMENT_MEMORY: 512Mi
   DEPLOYMENT_INSTANCE_COUNT: 3
   DEPLOYMENT_DISABLE_PROBE: false
-  DEPLOYMENT_JVM_OPTIONS: -Xms512m -Xmx1024m -Dspring.profiles.active=mysql,key-vault,cloud -Dazure.keyvault.uri=https://kv-petcliasc424.vault.azure.net # customize this
+  DEPLOYMENT_JVM_OPTIONS: -Xms512m -Xmx1024m -Dspring.profiles.active=mysql,key-vault,cloud -Dazure.keyvault.uri=https://kv-petcliasc42.vault.azure.net # customize this
 
   AZ_CLI_VERSION: 2.34.1
 
@@ -201,6 +201,7 @@ jobs:
           az provider register --namespace 'Microsoft.AppPlatform'
           # az config set extension.use_dynamic_install=yes_without_prompt
           az extension add --name spring-cloud --yes 
+          az version
 
           echo "github.workspace = ${{ github.workspace }}"
           pwd
@@ -252,7 +253,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.DISCOVERY_SERVER }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
+        package: $DISCOVERY_SERVER_ARTIFACT_FULL_PATH #/github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}  
         deployment-name: ${{ env.DEPLOYMENT_NAME }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
