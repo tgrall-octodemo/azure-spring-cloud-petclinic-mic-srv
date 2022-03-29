@@ -214,14 +214,20 @@ jobs:
           ls -al /github/workspace/${{ env.VETS_SERVICE }}
           ls -al /github/workspace/${{ env.VISITS_SERVICE }}
 
+          DISCOVERY_SERVER_ARTIFACT_FULL_PATH="/github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}"
+          ls -al $DISCOVERY_SERVER_ARTIFACT_FULL_PATH
     - name: Create Deployment for DISCOVERY-SERVER
       uses: azure/CLI@v1
       with:
         azcliversion:  ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
           ls -al /github/workspace
-          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}        
-          # az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app  ${{ env.DISCOVERY_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path  /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }} -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
+          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
+
+          DISCOVERY_SERVER_ARTIFACT_FULL_PATH="/github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}"
+          ls -al $DISCOVERY_SERVER_ARTIFACT_FULL_PATH
+
+          az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app ${{ env.DISCOVERY_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path $DISCOVERY_SERVER_ARTIFACT_FULL_PATH -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
           ls -al /github/workspace
           ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
 
