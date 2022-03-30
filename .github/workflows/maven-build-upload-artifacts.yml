@@ -1,0 +1,246 @@
+name: Build to Azure Spring Cloud with Key Vault and Upload the jar Arfifacts
+on: [push]
+
+###################################################################################################################
+#
+# https://github.com/marketplace/actions/azure-spring-cloud
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
+#
+###################################################################################################################
+
+env:
+  AZ_CLI_VERSION: 2.34.1
+  SPRING_CLOUD_SERVICE: asc-petcliasc # customize this
+  KEYVAULT: kv-petcliasc42 # customize this
+  
+  # ==== APPS ====:
+  API_GATEWAY: api-gateway
+  ADMIN_SERVER: admin-server
+  CONFIG_SERVER: config-server
+  CUSTOMERS_SERVICE: customers-service
+  DISCOVERY_SERVER: discovery-server
+  VETS_SERVICE: vets-service
+  VISITS_SERVICE: visits-service
+
+  PRJ_PREFIX: spring-petclinic
+
+  # ==== Azure Spring Cloud Apps Deployment params ====:
+
+  
+  DEPLOYMENT_VERSION: 2.6.3
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # environment: production // https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+    # https://github.com/marketplace/actions/azure-login
+    steps:
+
+    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#environment-files
+    # /!\ IMPORTANT:  The step that creates or updates the environment variable does not have access to the new value, but all subsequent steps in a job will have access.
+    - name: Set Base environment variables
+      run: |
+        echo "LOCAL_IP=$(curl whatismyip.akamai.com)" >> $GITHUB_ENV
+        
+        echo "API_GATEWAY_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.API_GATEWAY }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.CONFIG_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.DISCOVERY_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.CUSTOMERS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "VETS_SERVICE_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.VETS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+
+        echo "API_GATEWAY_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.API_GATEWAY }}" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.ADMIN_SERVER }}" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.CONFIG_SERVER }}" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.CUSTOMERS_SERVICE }}" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.DISCOVERY_SERVER }}" >> $GITHUB_ENV
+        echo "VETS_SERVICE_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.VETS_SERVICE }}" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.VISITS_SERVICE }}" >> $GITHUB_ENV
+
+      shell: bash
+
+    # Variables in the env map cannot be defined in terms of other variables in the map
+    - name: Set dependent environment variables
+      run: |
+
+        # ==== JARS ====: PWD already in /home/runner/work/azure-spring-cloud-petclinic-mic-srv >> $GITHUB_ENV
+        echo "API_GATEWAY_JAR=${{ env.PRJ_PREFIX }}-${{ env.API_GATEWAY }}/target/$API_GATEWAY_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_JAR=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}/target/$ADMIN_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_JAR=${{ env.PRJ_PREFIX }}-${{ env.CONFIG_SERVER }}/target/$CONFIG_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.CUSTOMERS_SERVICE }}/target/$CUSTOMERS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_JAR=${{ env.PRJ_PREFIX }}-${{ env.DISCOVERY_SERVER }}/target/$DISCOVERY_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "VETS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VETS_SERVICE }}/target/$VETS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}/target/$VISITS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
+
+        GH_WORKSPACE="/github/workspace"
+        echo "API_GATEWAY_PACKAGE_PATH=$GH_WORKSPACE/${{ env.API_GATEWAY }}/${{ env.API_GATEWAY_JAR_ARTIFACT }}" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_PACKAGE_PATH=$GH_WORKSPACE/${{ env.ADMIN_SERVER }}/${{ env.ADMIN_SERVER_JAR_ARTIFACT }}" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_PACKAGE_PATH=$GH_WORKSPACE/${{ env.CONFIG_SERVER }}/${{ env.CONFIG_SERVER_JAR_ARTIFACT }}" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.CUSTOMERS_SERVICE }}/${{ env.CUSTOMERS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_PACKAGE_PATH=$GH_WORKSPACE/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}" >> $GITHUB_ENV
+        echo "VETS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.VETS_SERVICE }}/${{ env.VETS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.VISITS_SERVICE }}/${{ env.VISITS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
+
+      shell: bash
+
+    - name: Display environment variables
+      run: |
+        echo "Checking GITHUB_ENV"
+
+        echo "LOCAL_IP=$LOCAL_IP"
+
+        echo "API_GATEWAY_JAR_ARTIFACT=$API_GATEWAY_JAR_ARTIFACT"
+        echo "ADMIN_SERVER_JAR_ARTIFACT=$ADMIN_SERVER_JAR_ARTIFACT"
+        echo "CONFIG_SERVER_JAR_ARTIFACT=$CONFIG_SERVER_JAR_ARTIFACT"
+        echo "DISCOVERY_SERVER_JAR_ARTIFACT=$DISCOVERY_SERVER_JAR_ARTIFACT"
+        echo "CUSTOMERS_SERVICE_JAR_ARTIFACT=$CUSTOMERS_SERVICE_JAR_ARTIFACT"
+        echo "VETS_SERVICE_JAR_ARTIFACT=$VETS_SERVICE_JAR_ARTIFACT"
+        echo "VISITS_SERVICE_JAR_ARTIFACT=$VISITS_SERVICE_JAR_ARTIFACT"
+
+        echo "API_GATEWAY_JAR=$API_GATEWAY_JAR"
+        echo "ADMIN_SERVER_JAR=$ADMIN_SERVER_JAR"
+        echo "CONFIG_SERVER_JAR=$CONFIG_SERVER_JAR"
+        echo "CUSTOMERS_SERVICE_JAR=$CUSTOMERS_SERVICE_JAR"
+        echo "DISCOVERY_SERVER_JAR=$DISCOVERY_SERVER_JAR"
+        echo "VETS_SERVICE_JAR=$VETS_SERVICE_JAR"
+        echo "VISITS_SERVICE_JAR=$VISITS_SERVICE_JAR"
+
+        echo "API_GATEWAY_PACKAGE_PATH=$API_GATEWAY_PACKAGE_PATH"
+        echo "ADMIN_SERVER_PACKAGE_PATH=$ADMIN_SERVER_PACKAGE_PATH"
+        echo "CONFIG_SERVER_PACKAGE_PATH=$CONFIG_SERVER_PACKAGE_PATH"
+        echo "CUSTOMERS_SERVICE_PACKAGE_PATH=$CUSTOMERS_SERVICE_PACKAGE_PATH"
+        echo "DISCOVERY_SERVER_PACKAGE_PATH=$DISCOVERY_SERVER_PACKAGE_PATH"
+        echo "VETS_SERVICE_PACKAGE_PATH=$VETS_SERVICE_PACKAGE_PATH"
+        echo "VISITS_SERVICE_PACKAGE_PATH=$VISITS_SERVICE_PACKAGE_PATH"
+
+        echo "API_GATEWAY_DEPLOYMENT=$API_GATEWAY_DEPLOYMENT"
+        echo "ADMIN_SERVER_DEPLOYMENT=$ADMIN_SERVER_DEPLOYMENT"
+        echo "CONFIG_SERVER_DEPLOYMENT=$CONFIG_SERVER_DEPLOYMENT"
+        echo "CUSTOMERS_SERVICE_DEPLOYMENT=$CUSTOMERS_SERVICE_DEPLOYMENT"
+        echo "DISCOVERY_SERVER_DEPLOYMENT=$DISCOVERY_SERVER_DEPLOYMENT"
+        echo "VETS_SERVICE_DEPLOYMENT=$VETS_SERVICE_DEPLOYMENT"
+        echo "VISITS_SERVICE_DEPLOYMENT=$VISITS_SERVICE_DEPLOYMENT"
+      shell: bash
+
+    - name: Login with Key Vault SP
+      uses: azure/login@v1 
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # When Public access is disabled on KV, you need to add a network rule in the KV Firewall
+    - name: Authorize local IP to access the Azure Key Vault
+      uses: azure/CLI@v1
+      with:
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
+        inlineScript: |
+          az keyvault network-rule add --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
+          sleep 30
+
+    - name: Get service SP from Key Vault
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: ${{ env.KEYVAULT }}
+        secrets: "AZURE-CREDENTIALS-FOR-SPRING"
+      id: keyvaultaction
+    
+    - name: Get MySQL Secrets from Key Vault
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: ${{ env.KEYVAULT }}
+        secrets: "MYSQL-SERVER-FULL-NAME,MYSQL-DATABASE-NAME,MYSQL-SERVER-ADMIN-LOGIN-NAME,MYSQL-SERVER-ADMIN-PASSWORD"
+      id: mysqlsecrets
+      
+    - name: Login with Service SP
+      uses: azure/login@v1
+      with:
+        creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
+    # Something to note, actions/checkout@v2 no longer sets the github workspace to the path input, which means you may need to manually set the working directory for your runs step
+    # https://github.com/actions/checkout/blob/main/adrs/0153-checkout-v2.md#path
+        
+    - name: Checkout your repo
+      uses: actions/checkout@v2
+      
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'microsoft'
+        cache: maven
+
+    - name: maven build, clean
+      run: |
+        mvn clean package -DskipTests -Denv=cloud
+        echo "github.workspace = ${{ github.workspace }}"
+        pwd
+        ls -al
+      # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+
+    - name: Archive ADMIN-SERVER Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.ADMIN_SERVER }}
+        path: ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }}
+        retention-days: 5
+
+    - name: Archive CONFIG-SERVER Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.CONFIG_SERVER }}
+        path: ${{ github.workspace }}/${{ env.CONFIG_SERVER_JAR }}
+        retention-days: 5
+
+    - name: Archive DISCOVERY-SERVER Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.DISCOVERY_SERVER }}
+        path: ${{ github.workspace }}/${{ env.DISCOVERY_SERVER_JAR }}
+        retention-days: 5
+
+    - name: Archive API-GATEWAY Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.API_GATEWAY }}
+        path: ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
+        retention-days: 5
+
+    - name: Archive CUSTOMERS-SERVICE Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.CUSTOMERS_SERVICE }}
+        path: ${{ github.workspace }}/${{ env.CUSTOMERS_SERVICE_JAR }}
+        retention-days: 5
+
+    - name: Archive VETS-SERVICE Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.VETS_SERVICE }}
+        path: ${{ github.workspace }}/${{ env.VETS_SERVICE_JAR }}
+        retention-days: 5
+
+    - name: Archive VISITS-SERVICE Jar artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.VISITS_SERVICE }}
+        path: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
+        retention-days: 5
+
+    - name: Disable local IP access to the Key Vault
+      uses: azure/CLI@v1
+      with:
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
+        inlineScript: |
+          az keyvault network-rule remove --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
+
+    # security hardening for self-hosted agents: https://github.com/marketplace/actions/azure-login
+    # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
+    # if the runner is self-hosted which is not github provided it is recommended to manually logout at the end of the workflow as shown below.
+    - name: Azure Logout security hardening
+      uses: azure/CLI@v1
+      with:
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear
