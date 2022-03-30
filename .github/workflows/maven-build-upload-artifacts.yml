@@ -104,7 +104,9 @@ jobs:
         echo "VISITS_SERVICE_PACKAGE_PATH=$VISITS_SERVICE_PACKAGE_PATH"
 
       shell: bash
-        
+
+    # Something to note, actions/checkout@v2 no longer sets the github workspace to the path input, which means you may need to manually set the working directory for your runs step
+    # https://github.com/actions/checkout/blob/main/adrs/0153-checkout-v2.md#path
     - name: Checkout your repo
       uses: actions/checkout@v2
       
