@@ -250,6 +250,7 @@
         
     </profiles>
 
+    <!--
     <servers>
         <server>
             <id>github-asc</id>
@@ -257,7 +258,8 @@
             <password>${env.GITHUB_TOKEN}</password>
         </server>
     </servers>
-
+    -->
+    
     <distributionManagement>
         <repository>
             <id>github-asc</id>
