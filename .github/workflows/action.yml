@@ -23,6 +23,8 @@ env:
   VETS_SERVICE: vets-service
   VISITS_SERVICE: visits-service
 
+  PRJ_PREFIX: spring-petclinic
+
   # ==== Azure Spring Cloud Apps Deployment params ====:
 
   # customize this
@@ -62,16 +64,14 @@ jobs:
     - name: Set Base environment variables
       run: |
         echo "LOCAL_IP=$(curl whatismyip.akamai.com)" >> $GITHUB_ENV
-
-        echo "PRJ_PREFIX=spring-petclinic" >> $GITHUB_ENV
-
-        echo "API_GATEWAY_JAR_ARTIFACT=$PRJ_PREFIX-${{ env.API_GATEWAY }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
-        echo "ADMIN_SERVER_JAR_ARTIFACT=$PRJ_PREFIX-${{ env.ADMIN_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
-        echo "CONFIG_SERVER_JAR_ARTIFACT=$PRJ_PREFIX-${{ env.CONFIG_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
-        echo "DISCOVERY_SERVER_JAR_ARTIFACT=$PRJ_PREFIX-${{ env.DISCOVERY_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
-        echo "CUSTOMERS_SERVICE_JAR_ARTIFACT=$PRJ_PREFIX-${{ env.CUSTOMERS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
-        echo "VETS_SERVICE_JAR_ARTIFACT=$PRJ_PREFIX-${{ env.VETS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
-        echo "VISITS_SERVICE_JAR_ARTIFACT=$PRJ_PREFIX-${{ env.VISITS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        
+        echo "API_GATEWAY_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.API_GATEWAY }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.CONFIG_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.DISCOVERY_SERVER }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.CUSTOMERS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "VETS_SERVICE_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.VETS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_JAR_ARTIFACT=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}-${{ env.DEPLOYMENT_VERSION }}.jar" >> $GITHUB_ENV
 
         echo "API_GATEWAY_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.API_GATEWAY }}" >> $GITHUB_ENV
         echo "ADMIN_SERVER_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.ADMIN_SERVER }}" >> $GITHUB_ENV
@@ -88,13 +88,13 @@ jobs:
       run: |
 
         # ==== JARS ====: PWD already in /home/runner/work/azure-spring-cloud-petclinic-mic-srv >> $GITHUB_ENV
-        echo "API_GATEWAY_JAR=$PRJ_PREFIX-${{ env.API_GATEWAY }}/target/$API_GATEWAY_JAR_ARTIFACT" >> $GITHUB_ENV
-        echo "ADMIN_SERVER_JAR=$PRJ_PREFIX-${{ env.ADMIN_SERVER }}/target/$ADMIN_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
-        echo "CONFIG_SERVER_JAR=$PRJ_PREFIX-${{ env.CONFIG_SERVER }}/target/$CONFIG_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
-        echo "CUSTOMERS_SERVICE_JAR=$PRJ_PREFIX-${{ env.CUSTOMERS_SERVICE }}/target/$CUSTOMERS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
-        echo "DISCOVERY_SERVER_JAR=$PRJ_PREFIX-${{ env.DISCOVERY_SERVER }}/target/$DISCOVERY_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
-        echo "VETS_SERVICE_JAR=$PRJ_PREFIX-${{ env.VETS_SERVICE }}/target/$VETS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
-        echo "VISITS_SERVICE_JAR=$PRJ_PREFIX-${{ env.VISITS_SERVICE }}/target/$VISITS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "API_GATEWAY_JAR=${{ env.PRJ_PREFIX }}-${{ env.API_GATEWAY }}/target/$API_GATEWAY_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_JAR=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}/target/$ADMIN_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_JAR=${{ env.PRJ_PREFIX }}-${{ env.CONFIG_SERVER }}/target/$CONFIG_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.CUSTOMERS_SERVICE }}/target/$CUSTOMERS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_JAR=${{ env.PRJ_PREFIX }}-${{ env.DISCOVERY_SERVER }}/target/$DISCOVERY_SERVER_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "VETS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VETS_SERVICE }}/target/$VETS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}/target/$VISITS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
 
         GH_WORKSPACE="/github/workspace"
         echo "API_GATEWAY_PACKAGE_PATH=$GH_WORKSPACE/${{ env.API_GATEWAY }}/${{ env.API_GATEWAY_JAR_ARTIFACT }}" >> $GITHUB_ENV
