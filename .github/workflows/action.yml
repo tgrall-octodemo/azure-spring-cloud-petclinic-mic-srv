@@ -56,16 +56,12 @@ jobs:
     # environment: production // https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     # https://github.com/marketplace/actions/azure-login
     steps:
-    - name: Login with Key Vault SP
-      uses: azure/login@v1 
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#environment-files
+    # /!\ IMPORTANT:  The step that creates or updates the environment variable does not have access to the new value, but all subsequent steps in a job will have access.
     - name: Set environment variables
       run: |
         echo "LOCAL_IP=$(curl whatismyip.akamai.com)" >> $GITHUB_ENV
-        echo "LOCAL_IP=${{ env.LOCAL_IP }}"
 
         PRJ_PREFIX="spring-petclinic"
 
@@ -104,7 +100,14 @@ jobs:
         echo "VETS_SERVICE_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.VETS_SERVICE }}" >> $GITHUB_ENV
         echo "VISITS_SERVICE_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.VISITS_SERVICE }}" >> $GITHUB_ENV
 
+      shell: bash
+
+    - name: Display environment variables
+      run: |
         echo "Checking GITHUB_ENV"
+
+        echo "LOCAL_IP=$LOCAL_IP"
+
         echo "API_GATEWAY_JAR_ARTIFACT=$API_GATEWAY_JAR_ARTIFACT"
         echo "ADMIN_SERVER_JAR_ARTIFACT=$ADMIN_SERVER_JAR_ARTIFACT"
         echo "CONFIG_SERVER_JAR_ARTIFACT=$CONFIG_SERVER_JAR_ARTIFACT"
@@ -136,14 +139,16 @@ jobs:
         echo "DISCOVERY_SERVER_DEPLOYMENT=$DISCOVERY_SERVER_DEPLOYMENT"
         echo "VETS_SERVICE_DEPLOYMENT=$VETS_SERVICE_DEPLOYMENT"
         echo "VISITS_SERVICE_DEPLOYMENT=$VISITS_SERVICE_DEPLOYMENT"
-
       shell: bash
+
+    - name: Login with Key Vault SP
+      uses: azure/login@v1 
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     # When Public access is disabled on KV, you need to add a network rule in the KV Firewall
     - name: Authorize local IP to access the Azure Key Vault
       uses: azure/CLI@v1
-      env:
-        TF_STORAGE_ACCOUNT: ${{ inputs.tf_storage_account }}
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
