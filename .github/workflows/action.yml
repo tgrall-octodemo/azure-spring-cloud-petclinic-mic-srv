@@ -65,7 +65,7 @@ jobs:
     - name: Set environment variables
       run: |
         echo "LOCAL_IP=$(curl whatismyip.akamai.com)" >> $GITHUB_ENV
-        echo "LOCAL_IP=$LOCAL_IP"
+        echo "LOCAL_IP=${{ env.LOCAL_IP }}"
 
         PRJ_PREFIX="spring-petclinic"
 
