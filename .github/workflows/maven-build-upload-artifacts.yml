@@ -10,9 +10,7 @@ on: [push]
 ###################################################################################################################
 
 env:
-  AZ_CLI_VERSION: 2.34.1
   SPRING_CLOUD_SERVICE: asc-petcliasc # customize this
-  KEYVAULT: kv-petcliasc42 # customize this
   
   # ==== APPS ====:
   API_GATEWAY: api-gateway
@@ -26,8 +24,6 @@ env:
   PRJ_PREFIX: spring-petclinic
 
   # ==== Azure Spring Cloud Apps Deployment params ====:
-
-  
   DEPLOYMENT_VERSION: 2.6.3
 
 jobs:
@@ -190,15 +186,3 @@ jobs:
         name: ${{ env.VISITS_SERVICE }}
         path: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
         retention-days: 5
-
-    # security hardening for self-hosted agents: https://github.com/marketplace/actions/azure-login
-    # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
-    # if the runner is self-hosted which is not github provided it is recommended to manually logout at the end of the workflow as shown below.
-    - name: Azure Logout security hardening
-      uses: azure/CLI@v1
-      with:
-        azcliversion: ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
-          az logout
-          az cache purge
-          az account clear
