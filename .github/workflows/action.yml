@@ -1,4 +1,4 @@
-name: Deploy to Azure Spring Cloud with Key Vault
+name: Build & Deploy to Azure Spring Cloud with Key Vault
 on: [push]
 
 ###################################################################################################################
@@ -248,10 +248,28 @@ jobs:
         path: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
         retention-days: 5
 
+    - name: Disable local IP access to the Key Vault
+      uses: azure/CLI@v1
+      with:
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
+        inlineScript: |
+          az keyvault network-rule remove --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
+
   deploy:
     needs: build
     runs-on: ubuntu-latest # [self-hosted, linux, x64]
     steps: 
+
+    - name: Authorize local IP to access the Azure Key Vault
+      uses: azure/CLI@v1
+      with:
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
+        inlineScript: |
+          NEW_IP=$(curl whatismyip.akamai.com)
+          echo "NEW_IP" $NEW_IP
+          echo "NEW_IP=$(curl whatismyip.akamai.com)" >> $GITHUB_ENV
+          az keyvault network-rule add --ip-address $NEW_IP --name ${{ env.KEYVAULT }} --only-show-errors
+          sleep 30
 
     # You can  download all artifacts in a workflow run by not specifying a name.
     - name: Download ALL Jar artifacts
@@ -274,60 +292,6 @@ jobs:
       with:
         creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
 
-    # Unable to prompt for extension install confirmation as no tty available. 
-    - name: Install Azure Spring Cloud CLI extention
-      uses: azure/CLI@v1
-      with:
-        azcliversion:  ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
-          # uname -a
-          # jq --version
-          # az provider register --namespace 'Microsoft.AppPlatform'
-          # az config set extension.use_dynamic_install=yes_without_prompt
-          # az extension add --name spring-cloud --yes 
-          az version
-
-          echo "github.workspace = ${{ github.workspace }}"
-          pwd
-          ls -al /github
-          ls -al /github/workspace
-          ls -al /github/workspace/${{ env.ADMIN_SERVER }}
-          ls -al /github/workspace/${{ env.API_GATEWAY }}
-          ls -al /github/workspace/${{ env.CONFIG_SERVER }}
-          ls -al /github/workspace/${{ env.CUSTOMERS_SERVICE }}
-          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
-          ls -al /github/workspace/${{ env.VETS_SERVICE }}
-          ls -al /github/workspace/${{ env.VISITS_SERVICE }}
-
-          echo "DISCOVERY_SERVER_PACKAGE_PATH = $DISCOVERY_SERVER_PACKAGE_PATH"
-          echo " ENV DISCOVERY_SERVER_PACKAGE_PATH = ${{ env.DISCOVERY_SERVER_PACKAGE_PATH }}"
-          ls -al $DISCOVERY_SERVER_PACKAGE_PATH
-    - name: Create Deployment for DISCOVERY-SERVER
-      uses: azure/CLI@v1
-      with:
-        azcliversion:  ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
-          ls -al /github/workspace
-          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
-
-          DISCOVERY_SERVER_PACKAGE_PATH="/github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}"
-          echo "DISCOVERY_SERVER_PACKAGE_PATH = $DISCOVERY_SERVER_PACKAGE_PATH"
-          echo " ENV DISCOVERY_SERVER_PACKAGE_PATH = ${{ env.DISCOVERY_SERVER_PACKAGE_PATH }}"
-          echo "checking $DISCOVERY_SERVER_PACKAGE_PATH"
-          ls -al $DISCOVERY_SERVER_PACKAGE_PATH
-
-          az config set extension.use_dynamic_install=yes_without_prompt
-          # az spring-cloud app deployment create --name ${{ env.DEPLOYMENT_NAME }} --app ${{ env.DISCOVERY_SERVER }} -s ${{ env.SPRING_CLOUD_SERVICE }} --artifact-path $DISCOVERY_SERVER_PACKAGE_PATH -g ${{ env.DEPLOYMENT_RG }} --version ${{ env.DEPLOYMENT_VERSION }} --runtime-version ${{ env.DEPLOYMENT_RUNTIME_VERSION }} --cpu ${{ env.DEPLOYMENT_CPU }} --memory ${{ env.DEPLOYMENT_MEMORY }} --instance-count ${{ env.DEPLOYMENT_INSTANCE_COUNT }} --disable-probe ${{ env.DEPLOYMENT_DISABLE_PROBE }}
-          ls -al /github/workspace
-          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}
-
-          echo "checking /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}"
-          ls -al /github/workspace/${{ env.DISCOVERY_SERVER }}/${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }}
-
-          # echo "github.workspace = ${{ github.workspace }}"
-          # ls -al ${{ github.workspace }}
-          echo "pwd"
-          pwd
     - name: Deploy DISCOVERY-SERVER
       uses:  Azure/spring-cloud-deploy@v1
       with:
@@ -453,7 +417,7 @@ jobs:
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az keyvault network-rule remove --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
+          az keyvault network-rule remove --ip-address $NEW_IP --name ${{ env.KEYVAULT }} --only-show-errors
 
     # security hardening for self-hosted agents: https://github.com/marketplace/actions/azure-login
     # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
