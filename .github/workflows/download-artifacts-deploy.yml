@@ -30,7 +30,6 @@ env:
   # ==== Azure Spring Cloud Apps Deployment params ====:
 
   # customize this
-  # DEPLOYMENT_RG: rg-iac-asc-petclinic-mic-srv
   DEPLOYMENT_JVM_OPTIONS: -Dazure.keyvault.uri=https://kv-petcliasc42.vault.azure.net -Xms512m -Xmx1024m -Dspring.profiles.active=mysql,key-vault,cloud
   
   DEPLOYMENT_VERSION: 2.6.3
@@ -55,12 +54,11 @@ env:
   # DEPLOYMENT_ACTION: set-production
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     # environment: production // https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     # https://github.com/marketplace/actions/azure-login
     steps:
-
     # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#environment-files
     # /!\ IMPORTANT:  The step that creates or updates the environment variable does not have access to the new value, but all subsequent steps in a job will have access.
     - name: Set Base environment variables
@@ -182,113 +180,20 @@ jobs:
         creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
     # Something to note, actions/checkout@v2 no longer sets the github workspace to the path input, which means you may need to manually set the working directory for your runs step
     # https://github.com/actions/checkout/blob/main/adrs/0153-checkout-v2.md#path
-        
-    - name: Checkout your repo
-      uses: actions/checkout@v2
-      
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'microsoft'
-        cache: maven
 
-    - name: maven build, clean
-      run: |
-        mvn clean package -DskipTests -Denv=cloud
-        echo "github.workspace = ${{ github.workspace }}"
-        pwd
-        ls -al
-      # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
-
-    - name: Archive ADMIN-SERVER Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.ADMIN_SERVER }}
-        path: ${{ github.workspace }}/${{ env.ADMIN_SERVER_JAR }}
-        retention-days: 5
-
-    - name: Archive CONFIG-SERVER Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.CONFIG_SERVER }}
-        path: ${{ github.workspace }}/${{ env.CONFIG_SERVER_JAR }}
-        retention-days: 5
-
-    - name: Archive DISCOVERY-SERVER Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.DISCOVERY_SERVER }}
-        path: ${{ github.workspace }}/${{ env.DISCOVERY_SERVER_JAR }}
-        retention-days: 5
-
-    - name: Archive API-GATEWAY Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.API_GATEWAY }}
-        path: ${{ github.workspace }}/${{ env.API_GATEWAY_JAR }}
-        retention-days: 5
-
-    - name: Archive CUSTOMERS-SERVICE Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.CUSTOMERS_SERVICE }}
-        path: ${{ github.workspace }}/${{ env.CUSTOMERS_SERVICE_JAR }}
-        retention-days: 5
-
-    - name: Archive VETS-SERVICE Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.VETS_SERVICE }}
-        path: ${{ github.workspace }}/${{ env.VETS_SERVICE_JAR }}
-        retention-days: 5
-
-    - name: Archive VISITS-SERVICE Jar artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.VISITS_SERVICE }}
-        path: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
-        retention-days: 5
-
-    - name: Disable local IP access to the Key Vault
-      uses: azure/CLI@v1
-      with:
-        azcliversion: ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
-          az keyvault network-rule remove --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest # [self-hosted, linux, x64]
-    steps: 
-
+    # When Public access is disabled on KV, you need to add a network rule in the KV Firewall
     - name: Authorize local IP to access the Azure Key Vault
       uses: azure/CLI@v1
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          NEW_IP=$(curl whatismyip.akamai.com)
-          echo "NEW_IP" $NEW_IP
-          echo "NEW_IP=$(curl whatismyip.akamai.com)" >> $GITHUB_ENV
-          az keyvault network-rule add --ip-address $NEW_IP --name ${{ env.KEYVAULT }} --only-show-errors
+          az keyvault network-rule add --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
           sleep 30
 
     # You can  download all artifacts in a workflow run by not specifying a name.
     - name: Download ALL Jar artifacts
       uses: actions/download-artifact@v3
 
-    - name: Login with Key Vault SP
-      uses: azure/login@v1 
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
-    - name: Get service SP from Key Vault
-      uses: Azure/get-keyvault-secrets@v1
-      with:
-        keyvault: ${{ env.KEYVAULT }}
-        secrets: "AZURE-CREDENTIALS-FOR-SPRING"
-      id: keyvaultaction  
-    
     - name: Login with Service SP
       uses: azure/login@v1
       with:
@@ -416,10 +321,11 @@ jobs:
 
     - name: Disable local IP access to the Key Vault
       uses: azure/CLI@v1
+      if: ${{ always() }}
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
-          az keyvault network-rule remove --ip-address $NEW_IP --name ${{ env.KEYVAULT }} --only-show-errors
+          az keyvault network-rule remove --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
 
     # security hardening for self-hosted agents: https://github.com/marketplace/actions/azure-login
     # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
