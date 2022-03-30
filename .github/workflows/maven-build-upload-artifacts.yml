@@ -123,41 +123,6 @@ jobs:
         echo "VETS_SERVICE_DEPLOYMENT=$VETS_SERVICE_DEPLOYMENT"
         echo "VISITS_SERVICE_DEPLOYMENT=$VISITS_SERVICE_DEPLOYMENT"
       shell: bash
-
-    - name: Login with Key Vault SP
-      uses: azure/login@v1 
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    # When Public access is disabled on KV, you need to add a network rule in the KV Firewall
-    - name: Authorize local IP to access the Azure Key Vault
-      uses: azure/CLI@v1
-      with:
-        azcliversion: ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
-          az keyvault network-rule add --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
-          sleep 30
-
-    - name: Get service SP from Key Vault
-      uses: Azure/get-keyvault-secrets@v1
-      with:
-        keyvault: ${{ env.KEYVAULT }}
-        secrets: "AZURE-CREDENTIALS-FOR-SPRING"
-      id: keyvaultaction
-    
-    - name: Get MySQL Secrets from Key Vault
-      uses: Azure/get-keyvault-secrets@v1
-      with:
-        keyvault: ${{ env.KEYVAULT }}
-        secrets: "MYSQL-SERVER-FULL-NAME,MYSQL-DATABASE-NAME,MYSQL-SERVER-ADMIN-LOGIN-NAME,MYSQL-SERVER-ADMIN-PASSWORD"
-      id: mysqlsecrets
-      
-    - name: Login with Service SP
-      uses: azure/login@v1
-      with:
-        creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
-    # Something to note, actions/checkout@v2 no longer sets the github workspace to the path input, which means you may need to manually set the working directory for your runs step
-    # https://github.com/actions/checkout/blob/main/adrs/0153-checkout-v2.md#path
         
     - name: Checkout your repo
       uses: actions/checkout@v2
@@ -225,13 +190,6 @@ jobs:
         name: ${{ env.VISITS_SERVICE }}
         path: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
         retention-days: 5
-
-    - name: Disable local IP access to the Key Vault
-      uses: azure/CLI@v1
-      with:
-        azcliversion: ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
-          az keyvault network-rule remove --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
 
     # security hardening for self-hosted agents: https://github.com/marketplace/actions/azure-login
     # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
