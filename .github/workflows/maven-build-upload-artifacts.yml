@@ -27,8 +27,11 @@ env:
   DEPLOYMENT_VERSION: 2.6.3
 
 jobs:
-  build:
+  build:  
     runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      packages: write     
     # environment: production // https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     # https://github.com/marketplace/actions/azure-login
     steps:
@@ -123,8 +126,8 @@ jobs:
         echo "github.workspace = ${{ github.workspace }}"
         pwd
         ls -al
-      # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
-
+    # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+    # /!\ Artifacts allow you to persist data after a job has completed, and share that data with another job in the same workflow.
     - name: Archive ADMIN-SERVER Jar artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -173,3 +176,16 @@ jobs:
         name: ${{ env.VISITS_SERVICE }}
         path: ${{ github.workspace }}/${{ env.VISITS_SERVICE_JAR }}
         retention-days: 5
+
+    # https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages
+    # To authenticate to a GitHub Packages registry within a GitHub Actions workflow, you can use
+    # GITHUB_TOKEN to publish packages associated with the workflow repository.
+
+    # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
+    # https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-maven#publishing-packages-to-github-packages
+    # Publish the package
+    - name:  Publish the package
+      run: |
+        mvn deploy --batch-mode -DskipTests -Dmaven.install.skip=true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
