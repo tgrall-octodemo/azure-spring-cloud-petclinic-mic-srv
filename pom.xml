@@ -83,6 +83,16 @@
                 </file>
             </activation>
             <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>3.0.0-M2</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
@@ -138,6 +148,13 @@
                             <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                         </configuration>
                     </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>3.0.0-M2</version>
+                    </plugin>
+
                 </plugins>
             </build>
         </profile>
@@ -211,5 +228,43 @@
             </dependencies>
         </profile>
 
+        <!-- https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry -->
+        <profile>
+            <id>github-asc</id>
+            <repositories>
+                <!--
+                <repository>
+                    <id>central</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                </repository>
+                -->
+                <repository>
+                    <id>github-asc</id>
+                    <url>https://maven.pkg.github.com/ezYakaEagle442/azure-spring-cloud-petclinic-mic-srv</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+        
     </profiles>
+
+    <servers>
+        <server>
+            <id>github-asc</id>
+            <username>ezYakaEagle442</username>
+            <password>${env.GITHUB_TOKEN}</password>
+        </server>
+    </servers>
+
+    <distributionManagement>
+        <repository>
+            <id>github-asc</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/ezYakaEagle442/azure-spring-cloud-petclinic-mic-srv</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+
 </project>
