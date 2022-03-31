@@ -182,21 +182,16 @@ jobs:
         ls -al
         ls -al ${{ github.workspace }}
 
-        echo "PKG_VER_ID=$PKG_VER_ID"
-        echo "PKG_HTML_URL=$PKG_HTML_URL"
-
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
         sed -i 's/<a href=\"//g' PKG_HTML_FILE.txt
         sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
 
         PKG_URL_LOCAL_PATH="pkg_url.txt"
-        echo "Verify PKG_HTML_FILE.txt ..."
-        cat PKG_HTML_FILE.txt
         cat PKG_HTML_FILE.txt |
         while IFS= read -r line
         do
-            echo "line ... $line"
+            echo "line ... |$line|"
             echo "$line" > $PKG_URL_LOCAL_PATH
             echo "Verify PKG_URL_LOCAL_PATH.txt ..."
             cat $PKG_URL_LOCAL_PATH
