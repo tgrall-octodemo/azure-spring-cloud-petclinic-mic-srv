@@ -176,30 +176,28 @@ jobs:
     - name: Download Admin-Server GH Package
       run: |
         PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.ADMIN_SERVER_API_URL }} | jq .[0].id)
-        curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.ADMIN_SERVER_API_URL }}/$PKG_VER_ID | jq .html_url > PKG_HTML_URL_FILE.txt
-        
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.ADMIN_SERVER_API_URL }}/$PKG_VER_ID | jq -r .html_url)
+
         pwd
         ls -al
         ls -al ${{ github.workspace }}
 
-        echo "PKG_HTML_URL"
-        cat PKG_HTML_URL_FILE.txt
-        sed -i 's/\"//g' PKG_HTML_URL_FILE.txt
-        cat PKG_HTML_URL_FILE.txt
-        PKG_HTML_URL=`cat PKG_HTML_URL_FILE.txt`
-
         echo "PKG_VER_ID=$PKG_VER_ID"
         echo "PKG_HTML_URL=$PKG_HTML_URL"
+
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
         sed -i 's/<a href=\"//g' PKG_HTML_FILE.txt
         sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
 
         PKG_URL_LOCAL_PATH="pkg_url.txt"
+        echo "Verify PKG_HTML_FILE.txt ..."
         cat PKG_HTML_FILE.txt |
         while IFS= read -r line
         do
+            echo "$line"
             echo "$line" > $PKG_URL_LOCAL_PATH
+            echo "Verify PKG_URL_LOCAL_PATH.txt ..."
             cat $PKG_URL_LOCAL_PATH
             # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
             wget "$line" -O $ADMIN_SERVER_JAR_ARTIFACT # --header="Authorization: Bearer ${{ env.GHA_PAT }}"
