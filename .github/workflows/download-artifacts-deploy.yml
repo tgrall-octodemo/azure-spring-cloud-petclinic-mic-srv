@@ -186,6 +186,7 @@ jobs:
 
         sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
         sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+        sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
 
         PKG_URL_LOCAL_PATH="pkg_url.txt"
         cat PKG_HTML_FILE.txt |
@@ -197,7 +198,7 @@ jobs:
             cat $PKG_URL_LOCAL_PATH
             echo "About to download Artifact to ${{ env.ADMIN_SERVER_JAR_ARTIFACT }} ..."
             # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
-            wget $line -O ${{ env.ADMIN_SERVER_JAR_ARTIFACT }}  # --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            wget $line -O ${{ env.ADMIN_SERVER_JAR_ARTIFACT }} --header="Authorization: Bearer ${{ env.GHA_PAT }}"
             # Quick & dirty, the first item is the jar file
             break ;
         done
