@@ -195,7 +195,7 @@ jobs:
             echo "$line" > $PKG_URL_LOCAL_PATH
             echo "Verify PKG_URL_LOCAL_PATH.txt ..."
             cat $PKG_URL_LOCAL_PATH
-            About to download Artifact to ${{ env.ADMIN_SERVER_JAR_ARTIFACT }} ...
+            echo "About to download Artifact to ${{ env.ADMIN_SERVER_JAR_ARTIFACT }} ..."
             # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
             wget $line -O ${{ env.ADMIN_SERVER_JAR_ARTIFACT }}  # --header="Authorization: Bearer ${{ env.GHA_PAT }}"
             # Quick & dirty, the first item is the jar file
