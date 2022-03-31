@@ -178,26 +178,50 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
-    # Something to note, actions/checkout@v2 no longer sets the github workspace to the path input, which means you may need to manually set the working directory for your runs step
-    # https://github.com/actions/checkout/blob/main/adrs/0153-checkout-v2.md#path
-
-    # When Public access is disabled on KV, you need to add a network rule in the KV Firewall
-    - name: Authorize local IP to access the Azure Key Vault
-      uses: azure/CLI@v1
-      with:
-        azcliversion: ${{ env.AZ_CLI_VERSION }}
-        inlineScript: |
-          az keyvault network-rule add --ip-address $LOCAL_IP --name ${{ env.KEYVAULT }} --only-show-errors
-          sleep 30
 
     # You can  download all artifacts in a workflow run by not specifying a name.
     - name: Download ALL Jar artifacts
       uses: actions/download-artifact@v3
 
-    - name: Login with Service SP
-      uses: azure/login@v1
-      with:
-        creds: ${{ steps.keyvaultaction.outputs.AZURE-CREDENTIALS-FOR-SPRING }}
+    # As the Deploy Job runs now in a different Workflow than the Build Job, the data workspace is not shared anymore
+    # You need to download the Artifacts from the GH Packages
+    # https://docs.github.com/en/rest/reference/packages#get-a-package-for-an-organization
+    # generate a PAT : https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+    # /!\ IMPORTANT: If package_type is not container, your token must also include the repo scope.
+    # https://gist.github.com/maxim/6e15aa45ba010ab030c4
+    # local test with: curl -u username:<Your PAT Token> -H "Accept: application/vnd.github.v3+json" https://api.github.com
+    # curl -u username:<Your PAT Token> -H "Accept: application/vnd.github.v3+json" https://api.github.com/user/packages/maven/org.springframework.samples.petclinic.admin.spring-petclinic-admin-server/versions
+    # curl -u username:<Your PAT Token> -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/ezYakaEagle442/azure-spring-cloud-petclinic-mic-srv/releases
+
+    - name: Download Admin-Server GH Package
+      run: |
+        GROUP_ID="org.springframework.samples.petclinic.admin"
+        ARTIFACT_ID="${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}"
+        GH_API="api.github.com/user/packages/maven/$GROUP_ID.$ARTIFACT_ID/versions"
+        
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API | jq .[0].id)
+        PKG_HTML_URL =$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API/$PKG_VER_ID | jq .html_url)
+        curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        sed -i 's/<a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+
+        PKG_URL_LOCAL_PATH="pkg_url.txt"
+        cat PKG_HTML_FILE.txt |
+        while IFS= read -r line
+        do
+            echo "$line" > $PKG_URL_LOCAL_PATH
+            # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
+            wget "$line" -O $ADMIN_SERVER_JAR_ARTIFACT # --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            # Quick & dirty, the first item is the jar file
+            break ;
+        done
+
+        ls -al
+
+      shell: bash
+      env:
+        GHA_PAT: ${{ secrets.GHA_PAT }}
 
     - name: Deploy DISCOVERY-SERVER
       uses:  Azure/spring-cloud-deploy@v1
