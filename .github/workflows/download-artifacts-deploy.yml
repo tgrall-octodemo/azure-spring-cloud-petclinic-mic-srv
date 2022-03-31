@@ -282,7 +282,7 @@ jobs:
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
         mkdir $GH_WORKSPACE/${{ env.DISCOVERY_SERVER }}
-        
+
         sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
         sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
         sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
@@ -344,7 +344,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.DISCOVERY_SERVER }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: $DISCOVERY_SERVER_PACKAGE_PATH
+        package: ${{ env.DISCOVERY_SERVER_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}  
         deployment-name: $DISCOVERY_SERVER_DEPLOYMENT
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
@@ -359,7 +359,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.CONFIG_SERVER }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: $CONFIG_SERVER_PACKAGE_PATH
+        package: ${{ env.CONFIG_SERVER_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }} 
         deployment-name: $CONFIG_SERVER_DEPLOYMENT
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
@@ -374,7 +374,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.ADMIN_SERVER }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: $ADMIN_SERVER_PACKAGE_PATH
+        package: ${{ env.ADMIN_SERVER_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}   
         deployment-name: $ADMIN_SERVER_DEPLOYMENT
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
@@ -389,7 +389,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.API_GATEWAY }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: $API_GATEWAY_PACKAGE_PATH
+        package: ${{ env.API_GATEWAY_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         deployment-name: $API_GATEWAY_DEPLOYMENT
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
@@ -404,7 +404,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.VETS_SERVICE }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: $VETS_SERVICE_DEPLOYMENT
+        package: ${{ env.VETS_SERVICE_DEPLOYMENT }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
         environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} \
@@ -424,7 +424,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.VISITS_SERVICE }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: $VISITS_SERVICE_PACKAGE_PATH
+        package: ${{ env.VISITS_SERVICE_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
         environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} \
@@ -444,7 +444,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.CUSTOMERS_SERVICE }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: $CUSTOMERS_SERVICE_PACKAGE_PATH
+        package: ${{ env.CUSTOMERS_SERVICE_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
         environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} \
