@@ -224,6 +224,10 @@ jobs:
         ls -al
         ls -al ${{ github.workspace }}
 
+        mkdir $GH_WORKSPACE/${{ env.ADMIN_SERVER }}
+        ls -al
+        ls -al ${{ github.workspace }}
+
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
         sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
@@ -244,7 +248,7 @@ jobs:
         
         pwd
         ls -al
-        ls -al mkdir $GH_WORKSPACE/${{ env.ADMIN_SERVER }}
+        ls -al $GH_WORKSPACE/${{ env.ADMIN_SERVER }}
 
       shell: bash
       env:
