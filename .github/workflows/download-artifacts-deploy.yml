@@ -81,6 +81,11 @@ jobs:
         echo "VETS_SERVICE_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.VETS_SERVICE }}" >> $GITHUB_ENV
         echo "VISITS_SERVICE_DEPLOYMENT=${{ env.DEPLOYMENT_NAME }}-${{ env.VISITS_SERVICE }}" >> $GITHUB_ENV
 
+        echo "GH_API=api.github.com/user/packages/maven" >> $GITHUB_ENV
+        
+        echo "ADMIN_SERVER_GROUP_ID=org.springframework.samples.petclinic.admin" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}" >> $GITHUB_ENV
+
       shell: bash
 
     # Variables in the env map cannot be defined in terms of other variables in the map
@@ -105,9 +110,7 @@ jobs:
         echo "VETS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.VETS_SERVICE }}/${{ env.VETS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
         echo "VISITS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.VISITS_SERVICE }}/${{ env.VISITS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
 
-        echo "ADMIN_SERVER_GROUP_ID=org.springframework.samples.petclinic.admin" >> $GITHUB_ENV
-        echo "ADMIN_SERVER_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}" >> $GITHUB_ENV
-        echo "GH_API=api.github.com/user/packages/maven" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_API_URL=https://$GH_API/$ADMIN_SERVER_GROUP_ID.$ADMIN_SERVER_ARTIFACT_ID/versions" >> $GITHUB_ENV
 
       shell: bash
 
@@ -149,9 +152,10 @@ jobs:
         echo "VETS_SERVICE_DEPLOYMENT=$VETS_SERVICE_DEPLOYMENT"
         echo "VISITS_SERVICE_DEPLOYMENT=$VISITS_SERVICE_DEPLOYMENT"
 
+        echo "GH_API=$GH_API"
         echo "ADMIN_SERVER_GROUP_ID=$ADMIN_SERVER_GROUP_ID"
         echo "ADMIN_SERVER_ARTIFACT_ID=$ADMIN_SERVER_ARTIFACT_ID"
-        echo "GH_API=$GH_API"
+        echo "ADMIN_SERVER_API_URL=$ADMIN_SERVER_API_URL"
 
       shell: bash
 
@@ -204,8 +208,8 @@ jobs:
 
     - name: Download Admin-Server GH Package
       run: |
-        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API/$ADMIN_SERVER_GROUP_ID.$ADMIN_SERVER_ARTIFACT_ID/versions | jq .[0].id)
-        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API/$ADMIN_SERVER_GROUP_ID.$ADMIN_SERVER_ARTIFACT_ID/versions/$PKG_VER_ID | jq .html_url)
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" $ADMIN_SERVER_API_URL | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ADMIN_SERVER_API_URL/$PKG_VER_ID | jq .html_url)
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
         sed -i 's/<a href=\"//g' PKG_HTML_FILE.txt
