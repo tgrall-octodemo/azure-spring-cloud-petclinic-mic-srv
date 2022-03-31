@@ -192,15 +192,16 @@ jobs:
 
         PKG_URL_LOCAL_PATH="pkg_url.txt"
         echo "Verify PKG_HTML_FILE.txt ..."
+        cat PKG_HTML_FILE.txt
         cat PKG_HTML_FILE.txt |
         while IFS= read -r line
         do
-            echo "$line"
+            echo "line ... $line"
             echo "$line" > $PKG_URL_LOCAL_PATH
             echo "Verify PKG_URL_LOCAL_PATH.txt ..."
             cat $PKG_URL_LOCAL_PATH
             # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
-            wget "$line" -O $ADMIN_SERVER_JAR_ARTIFACT # --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            wget $line -O $ADMIN_SERVER_JAR_ARTIFACT # --header="Authorization: Bearer ${{ env.GHA_PAT }}"
             # Quick & dirty, the first item is the jar file
             break ;
         done
