@@ -346,7 +346,7 @@ jobs:
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ env.DISCOVERY_SERVER_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}  
-        deployment-name: $DISCOVERY_SERVER_DEPLOYMENT
+        deployment-name:  ${{ env.DISCOVERY_SERVER_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
@@ -361,7 +361,7 @@ jobs:
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ env.CONFIG_SERVER_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }} 
-        deployment-name: $CONFIG_SERVER_DEPLOYMENT
+        deployment-name:  ${{ env.CONFIG_SERVER_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
@@ -376,7 +376,7 @@ jobs:
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ env.ADMIN_SERVER_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}   
-        deployment-name: $ADMIN_SERVER_DEPLOYMENT
+        deployment-name:  ${{ env.ADMIN_SERVER_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
@@ -391,7 +391,7 @@ jobs:
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
         package: ${{ env.API_GATEWAY_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
-        deployment-name: $API_GATEWAY_DEPLOYMENT
+        deployment-name:  ${{ env.API_GATEWAY_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }} 
@@ -411,7 +411,7 @@ jobs:
         -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} \
         -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
         -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"    
-        deployment-name: $VETS_SERVICE_DEPLOYMENT
+        deployment-name:  ${{ env.VETS_SERVICE_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
@@ -431,7 +431,7 @@ jobs:
         -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} \
         -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
         -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
-        deployment-name: $VISITS_SERVICE_DEPLOYMENT
+        deployment-name:  ${{ env.VISITS_SERVICE_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
@@ -451,7 +451,7 @@ jobs:
         -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} \
         -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
         -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
-        deployment-name: $CUSTOMERS_SERVICE_DEPLOYMENT
+        deployment-name:  ${{ env.CUSTOMERS_SERVICE_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
