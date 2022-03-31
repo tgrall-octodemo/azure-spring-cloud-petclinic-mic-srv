@@ -119,7 +119,7 @@ jobs:
         echo "VETS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VETS_SERVICE }}/target/$VETS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
         echo "VISITS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}/target/$VISITS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
 
-        echo "GH_WORKSPACE="${{ github.workspace }}" >> $GITHUB_ENV # "/github/workspace"
+        echo "GH_WORKSPACE=${{ github.workspace }} >> $GITHUB_ENV # "/github/workspace"
         echo "API_GATEWAY_PACKAGE_PATH=$GH_WORKSPACE/${{ env.API_GATEWAY }}/${{ env.API_GATEWAY_JAR_ARTIFACT }}" >> $GITHUB_ENV
         echo "ADMIN_SERVER_PACKAGE_PATH=$GH_WORKSPACE/${{ env.ADMIN_SERVER }}/${{ env.ADMIN_SERVER_JAR_ARTIFACT }}" >> $GITHUB_ENV
         echo "CONFIG_SERVER_PACKAGE_PATH=$GH_WORKSPACE/${{ env.CONFIG_SERVER }}/${{ env.CONFIG_SERVER_JAR_ARTIFACT }}" >> $GITHUB_ENV
