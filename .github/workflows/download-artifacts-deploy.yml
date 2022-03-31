@@ -238,7 +238,7 @@ jobs:
             echo "line ... |$line|"
             echo "$line" > $PKG_URL_LOCAL_PATH
             # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
-            wget $line -O ${{ env.ADMIN_SERVER_JAR_ARTIFACT }} --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            wget $line -O ${{ env.ADMIN_SERVER_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
             # Quick & dirty, the first item is the jar file
             break ;
         done
@@ -265,7 +265,7 @@ jobs:
         do
             echo "line ... |$line|"
             echo "$line" > $PKG_URL_LOCAL_PATH
-            wget $line -O ${{ env.CONFIG_SERVER_JAR_ARTIFACT }} --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            wget $line -O ${{ env.CONFIG_SERVER_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
             break ;
         done        
         ls -al
@@ -289,7 +289,7 @@ jobs:
         do
             echo "line ... |$line|"
             echo "$line" > $PKG_URL_LOCAL_PATH
-            wget $line -O ${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }} --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            wget $line -O ${{ env.DISCOVERY_SERVER_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
             break ;
         done        
         ls -al
