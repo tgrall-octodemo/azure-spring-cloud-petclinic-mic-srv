@@ -186,7 +186,7 @@ jobs:
         cat PKG_HTML_URL_FILE.txt
         sed -i 's/\"//g' PKG_HTML_URL_FILE.txt
         cat PKG_HTML_URL_FILE.txt
-        PKG_HTML_URL=$(`cat PKG_HTML_URL_FILE.txt`)
+        PKG_HTML_URL=`cat PKG_HTML_URL_FILE.txt`
 
         echo "PKG_VER_ID=$PKG_VER_ID"
         echo "PKG_HTML_URL=$PKG_HTML_URL"
