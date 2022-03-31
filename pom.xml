@@ -241,9 +241,12 @@
                 <repository>
                     <id>github-asc</id>
                     <url>https://maven.pkg.github.com/ezYakaEagle442/azure-spring-cloud-petclinic-mic-srv</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
                     <snapshots>
                         <enabled>true</enabled>
-                    </snapshots>
+                    </snapshots>                    
                 </repository>
             </repositories>
         </profile>
