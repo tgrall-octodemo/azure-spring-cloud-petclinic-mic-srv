@@ -184,7 +184,7 @@ jobs:
 
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
-        sed -i 's/<a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
         sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
 
         PKG_URL_LOCAL_PATH="pkg_url.txt"
