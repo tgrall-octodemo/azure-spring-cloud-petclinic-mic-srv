@@ -104,6 +104,7 @@ jobs:
         echo "VISITS_SERVICE_GROUP_ID=org.springframework.samples.petclinic.visits" >> $GITHUB_ENV
         echo "VISITS_SERVICE_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}" >> $GITHUB_ENV
 
+        echo "GH_WORKSPACE=${{ github.workspace }}" >> $GITHUB_ENV # "/github/workspace"
       shell: bash
 
     # Variables in the env map cannot be defined in terms of other variables in the map
@@ -119,7 +120,6 @@ jobs:
         echo "VETS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VETS_SERVICE }}/target/$VETS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
         echo "VISITS_SERVICE_JAR=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}/target/$VISITS_SERVICE_JAR_ARTIFACT" >> $GITHUB_ENV
 
-        echo "GH_WORKSPACE=${{ github.workspace }}" >> $GITHUB_ENV # "/github/workspace"
         echo "API_GATEWAY_PACKAGE_PATH=$GH_WORKSPACE/${{ env.API_GATEWAY }}/${{ env.API_GATEWAY_JAR_ARTIFACT }}" >> $GITHUB_ENV
         echo "ADMIN_SERVER_PACKAGE_PATH=$GH_WORKSPACE/${{ env.ADMIN_SERVER }}/${{ env.ADMIN_SERVER_JAR_ARTIFACT }}" >> $GITHUB_ENV
         echo "CONFIG_SERVER_PACKAGE_PATH=$GH_WORKSPACE/${{ env.CONFIG_SERVER }}/${{ env.CONFIG_SERVER_JAR_ARTIFACT }}" >> $GITHUB_ENV
@@ -159,6 +159,7 @@ jobs:
         echo "VETS_SERVICE_JAR=$VETS_SERVICE_JAR"
         echo "VISITS_SERVICE_JAR=$VISITS_SERVICE_JAR"
 
+        echo "GH_WORKSPACE=$GH_WORKSPACE"
         echo "API_GATEWAY_PACKAGE_PATH=$API_GATEWAY_PACKAGE_PATH"
         echo "ADMIN_SERVER_PACKAGE_PATH=$ADMIN_SERVER_PACKAGE_PATH"
         echo "CONFIG_SERVER_PACKAGE_PATH=$CONFIG_SERVER_PACKAGE_PATH"
