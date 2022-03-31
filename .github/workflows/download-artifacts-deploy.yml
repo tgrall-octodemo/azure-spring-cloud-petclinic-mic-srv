@@ -105,6 +105,10 @@ jobs:
         echo "VETS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.VETS_SERVICE }}/${{ env.VETS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
         echo "VISITS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.VISITS_SERVICE }}/${{ env.VISITS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
 
+        echo "ADMIN_SERVER_GROUP_ID=org.springframework.samples.petclinic.admin" >> $GITHUB_ENV
+        echo "ADMIN_SERVER_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}" >> $GITHUB_ENV
+        echo "GH_API=api.github.com/user/packages/maven" >> $GITHUB_ENV
+
       shell: bash
 
     - name: Display environment variables
@@ -144,6 +148,11 @@ jobs:
         echo "DISCOVERY_SERVER_DEPLOYMENT=$DISCOVERY_SERVER_DEPLOYMENT"
         echo "VETS_SERVICE_DEPLOYMENT=$VETS_SERVICE_DEPLOYMENT"
         echo "VISITS_SERVICE_DEPLOYMENT=$VISITS_SERVICE_DEPLOYMENT"
+
+        echo "ADMIN_SERVER_GROUP_ID=$ADMIN_SERVER_GROUP_ID"
+        echo "ADMIN_SERVER_ARTIFACT_ID=$ADMIN_SERVER_ARTIFACT_ID"
+        echo "GH_API=$GH_API"
+
       shell: bash
 
     - name: Login with Key Vault SP
@@ -195,12 +204,8 @@ jobs:
 
     - name: Download Admin-Server GH Package
       run: |
-        GROUP_ID="org.springframework.samples.petclinic.admin"
-        ARTIFACT_ID="${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}"
-        GH_API="api.github.com/user/packages/maven/$GROUP_ID.$ARTIFACT_ID/versions"
-        
-        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API | jq .[0].id)
-        PKG_HTML_URL =$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API/$PKG_VER_ID | jq .html_url)
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API/$ADMIN_SERVER_GROUP_ID.$ADMIN_SERVER_ARTIFACT_ID/versions | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" https://$GH_API/$ADMIN_SERVER_GROUP_ID.$ADMIN_SERVER_ARTIFACT_ID/versions/$PKG_VER_ID | jq .html_url)
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
         sed -i 's/<a href=\"//g' PKG_HTML_FILE.txt
@@ -211,6 +216,7 @@ jobs:
         while IFS= read -r line
         do
             echo "$line" > $PKG_URL_LOCAL_PATH
+            cat $PKG_URL_LOCAL_PATH
             # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
             wget "$line" -O $ADMIN_SERVER_JAR_ARTIFACT # --header="Authorization: Bearer ${{ env.GHA_PAT }}"
             # Quick & dirty, the first item is the jar file
