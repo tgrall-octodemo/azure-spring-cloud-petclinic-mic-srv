@@ -221,9 +221,6 @@ jobs:
         PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.ADMIN_SERVER_API_URL }}/$PKG_VER_ID | jq -r .html_url)
 
         pwd
-        ls -al
-        ls -al ${{ github.workspace }}
-
         mkdir $GH_WORKSPACE/${{ env.ADMIN_SERVER }}
         ls -al
         ls -al ${{ github.workspace }}
@@ -246,8 +243,6 @@ jobs:
             break ;
         done
         
-        pwd
-        ls -al
         ls -al $GH_WORKSPACE/${{ env.ADMIN_SERVER }}
 
       shell: bash
@@ -259,6 +254,8 @@ jobs:
         PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.CONFIG_SERVER_API_URL }} | jq .[0].id)
         PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.CONFIG_SERVER_API_URL }}/$PKG_VER_ID | jq -r .html_url)
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        mkdir $GH_WORKSPACE/${{ env.CONFIG_SERVER }}
 
         sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
         sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
@@ -273,7 +270,7 @@ jobs:
             wget $line -O ${{ env.CONFIG_SERVER_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
             break ;
         done        
-        ls -al
+        ls -al $GH_WORKSPACE/${{ env.CONFIG_SERVER }}
       shell: bash
       env:
         GHA_PAT: ${{ secrets.GHA_PAT }}
@@ -284,6 +281,8 @@ jobs:
         PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.DISCOVERY_SERVER_API_URL }}/$PKG_VER_ID | jq -r .html_url)
         curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
 
+        mkdir $GH_WORKSPACE/${{ env.DISCOVERY_SERVER }}
+        
         sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
         sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
         sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
@@ -297,9 +296,8 @@ jobs:
             wget $line -O ${{ env.DISCOVERY_SERVER_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
             break ;
         done        
-        ls -al
-        pwd
-        ls -al mkdir $GH_WORKSPACE/${{ env.DISCOVERY_SERVER }}        
+
+        ls -al $GH_WORKSPACE/${{ env.DISCOVERY_SERVER }}        
       shell: bash
       env:
         GHA_PAT: ${{ secrets.GHA_PAT }}
