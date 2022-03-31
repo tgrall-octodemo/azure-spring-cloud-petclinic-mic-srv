@@ -184,8 +184,14 @@ jobs:
     # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
     # https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-maven#publishing-packages-to-github-packages
     # Publish the package
+    # https://stackoverflow.com/questions/57711558/deploy-to-github-package-registry-from-github-action
+
     - name:  Publish the package
       run: |
-        mvn deploy --batch-mode -DskipTests -Dmaven.install.skip=true
+        mkdir -p ~/.m2
+        echo "<settings><servers><server><id>github-asc</id><username>$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $1}')</username><password>\${env.GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml
+        REPO="github-asc::default::https://maven.pkg.github.com/${GITHUB_REPOSITORY}"
+
+        mvn deploy -DaltReleaseDeploymentRepository="${REPO}" -DaltSnapshotDeploymentRepository="${REPO}" --batch-mode -DskipTests -Dmaven.install.skip=true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
