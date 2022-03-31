@@ -176,9 +176,13 @@ jobs:
     - name: Download Admin-Server GH Package
       run: |
         PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.ADMIN_SERVER_API_URL }} | jq .[0].id)
-        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.ADMIN_SERVER_API_URL }}/$PKG_VER_ID | jq .html_url) > PKG_HTML_URL_FILE.txt
+        $(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.ADMIN_SERVER_API_URL }}/$PKG_VER_ID | jq .html_url) > PKG_HTML_URL_FILE.txt
         
-        echo "PKG_HTML_URL=$PKG_HTML_URL"
+        pwd
+        ls -al
+        ls -al ${{ github.workspace }}
+
+        echo "PKG_HTML_URL"
         cat PKG_HTML_URL_FILE.txt
         sed -i 's/\"//g' PKG_HTML_URL_FILE.txt
         cat PKG_HTML_URL_FILE.txt
