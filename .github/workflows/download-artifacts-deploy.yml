@@ -86,6 +86,24 @@ jobs:
         echo "ADMIN_SERVER_GROUP_ID=org.springframework.samples.petclinic.admin" >> $GITHUB_ENV
         echo "ADMIN_SERVER_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.ADMIN_SERVER }}" >> $GITHUB_ENV
 
+        echo "API_GATEWAY_GROUP_ID=org.springframework.samples.petclinic.api" >> $GITHUB_ENV
+        echo "API_GATEWAY_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.API_GATEWAY }}" >> $GITHUB_ENV
+
+        echo "CONFIG_SERVER_GROUP_ID=org.springframework.samples.petclinic.config" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.CONFIG_SERVER }}" >> $GITHUB_ENV
+
+        echo "CUSTOMERS_SERVICE_GROUP_ID=org.springframework.samples.petclinic.client" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.CUSTOMERS_SERVICE }}" >> $GITHUB_ENV
+
+        echo "DISCOVERY_SERVER_GROUP_ID=org.springframework.samples.petclinic.discovery" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.DISCOVERY_SERVER }}" >> $GITHUB_ENV
+
+        echo "VETS_SERVICE_GROUP_ID=org.springframework.samples.petclinic.vets" >> $GITHUB_ENV
+        echo "VETS_SERVICE_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.VETS_SERVICE }}" >> $GITHUB_ENV
+
+        echo "VISITS_SERVICE_GROUP_ID=org.springframework.samples.petclinic.visits" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_ARTIFACT_ID=${{ env.PRJ_PREFIX }}-${{ env.VISITS_SERVICE }}" >> $GITHUB_ENV
+
       shell: bash
 
     # Variables in the env map cannot be defined in terms of other variables in the map
@@ -111,7 +129,12 @@ jobs:
         echo "VISITS_SERVICE_PACKAGE_PATH=$GH_WORKSPACE/${{ env.VISITS_SERVICE }}/${{ env.VISITS_SERVICE_JAR_ARTIFACT }}" >> $GITHUB_ENV
 
         echo "ADMIN_SERVER_API_URL=https://$GH_API/$ADMIN_SERVER_GROUP_ID.$ADMIN_SERVER_ARTIFACT_ID/versions" >> $GITHUB_ENV
-
+        echo "API_GATEWAY_API_URL=https://$GH_API/$API_GATEWAY_GROUP_ID.$API_GATEWAY_ARTIFACT_ID/versions" >> $GITHUB_ENV
+        echo "CONFIG_SERVER_API_URL=https://$GH_API/$CONFIG_SERVER_GROUP_ID.$CONFIG_SERVER_ARTIFACT_ID/versions" >> $GITHUB_ENV
+        echo "CUSTOMERS_SERVICE_API_URL=https://$GH_API/$CUSTOMERS_SERVICEGROUP_ID.$CUSTOMERS_SERVICE_ARTIFACT_ID/versions" >> $GITHUB_ENV
+        echo "DISCOVERY_SERVER_API_URL=https://$GH_API/$DISCOVERY_SERVER__GROUP_ID.$DISCOVERY_SERVER_ARTIFACT_ID/versions" >> $GITHUB_ENV
+        echo "VETS_SERVICE_API_URL=https://$GH_API/$VETS_SERVICE_GROUP_ID.$VETS_SERVICE_ARTIFACT_ID/versions" >> $GITHUB_ENV
+        echo "VISITS_SERVICE_API_URL=https://$GH_API/$VISITS_SERVICE_GROUP_ID.$VISITS_SERVICE_ARTIFACT_ID/versions" >> $GITHUB_ENV
       shell: bash
 
     - name: Display environment variables
@@ -153,9 +176,29 @@ jobs:
         echo "VISITS_SERVICE_DEPLOYMENT=$VISITS_SERVICE_DEPLOYMENT"
 
         echo "GH_API=$GH_API"
+        echo "ADMIN_SERVER_API_URL=$ADMIN_SERVER_API_URL"
+        echo "API_GATEWAY_API_URL=$API_GATEWAY_API_URL"
+        echo "CONFIG_SERVER_API_URL=$CONFIG_SERVER_API_URL"
+        echo "CUSTOMERS_SERVICE_API_URL=$CUSTOMERS_SERVICE_API_URL"
+        echo "DISCOVERY_SERVER_API_URL=$DISCOVERY_SERVER_API_URL"
+        echo "VETS_SERVICE_API_URL=$VETS_SERVICE_API_URL"
+        echo "VISITS_SERVICE_API_URL=$VISITS_SERVICE_API_URL"
+
         echo "ADMIN_SERVER_GROUP_ID=$ADMIN_SERVER_GROUP_ID"
         echo "ADMIN_SERVER_ARTIFACT_ID=$ADMIN_SERVER_ARTIFACT_ID"
         echo "ADMIN_SERVER_API_URL=$ADMIN_SERVER_API_URL"
+        echo "API_GATEWAY_GROUP_ID=$API_GATEWAY_GROUP_ID"
+        echo "API_GATEWAY_ARTIFACT_ID=$API_GATEWAY_ARTIFACT_ID"
+        echo "CONFIG_SERVER_GROUP_ID=$CONFIG_SERVER_GROUP_ID"
+        echo "CONFIG_SERVER_ARTIFACT_ID=$CONFIG_SERVER_ARTIFACT_ID"
+        echo "CUSTOMERS_SERVICE_GROUP_ID=$CUSTOMERS_SERVICE_GROUP_ID"
+        echo "CUSTOMERS_SERVICE_ARTIFACT_ID=$CUSTOMERS_SERVICE_GROUP_ID"
+        echo "DISCOVERY_SERVER_GROUP_ID=$DISCOVERY_SERVER_GROUP_ID"
+        echo "DISCOVERY_SERVER_ARTIFACT_ID=$DISCOVERY_SERVER_ARTIFACT_ID"
+        echo "VETS_SERVICE_GROUP_ID=$VETS_SERVICE_GROUP_ID"
+        echo "VETS_SERVICE_ARTIFACT_ID=$VETS_SERVICE_ARTIFACT_ID"
+        echo "VISITS_SERVICE_GROUP_ID=$VISITS_SERVICE_GROUP_ID"
+        echo "VISITS_SERVICE_ARTIFACT_ID=$VISITS_SERVICE_ARTIFACT_ID"
 
       shell: bash
 
@@ -194,9 +237,6 @@ jobs:
         do
             echo "line ... |$line|"
             echo "$line" > $PKG_URL_LOCAL_PATH
-            echo "Verify PKG_URL_LOCAL_PATH.txt ..."
-            cat $PKG_URL_LOCAL_PATH
-            echo "About to download Artifact to ${{ env.ADMIN_SERVER_JAR_ARTIFACT }} ..."
             # Content-Type: application/octet-stream not application/java-archive (or application/x-java-archive | application/x-jar)
             wget $line -O ${{ env.ADMIN_SERVER_JAR_ARTIFACT }} --header="Authorization: Bearer ${{ env.GHA_PAT }}"
             # Quick & dirty, the first item is the jar file
@@ -208,6 +248,55 @@ jobs:
       shell: bash
       env:
         GHA_PAT: ${{ secrets.GHA_PAT }}
+
+    - name: Download Config-Server GH Package
+      run: |
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.CONFIG_SERVER_API_URL }} | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.CONFIG_SERVER_API_URL }}/$PKG_VER_ID | jq -r .html_url)
+        curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+        sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
+
+        PKG_URL_LOCAL_PATH="pkg_url.txt"
+        cat PKG_HTML_FILE.txt |
+        while IFS= read -r line
+        do
+            echo "line ... |$line|"
+            echo "$line" > $PKG_URL_LOCAL_PATH
+            wget $line -O ${{ env.CONFIG_SERVER_JAR_ARTIFACT }} --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            break ;
+        done        
+        ls -al
+      shell: bash
+      env:
+        GHA_PAT: ${{ secrets.GHA_PAT }}
+
+    - name: Download Discovery-Server GH Package
+      run: |
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.DISCOVERY_SERVER_API_URL }} | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.DISCOVERY_SERVER_API_URL }}/$PKG_VER_ID | jq -r .html_url)
+        curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+        sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
+
+        PKG_URL_LOCAL_PATH="pkg_url.txt"
+        cat PKG_HTML_FILE.txt |
+        while IFS= read -r line
+        do
+            echo "line ... |$line|"
+            echo "$line" > $PKG_URL_LOCAL_PATH
+            wget $line -O ${{ env.DISCOVERY_SERVER_JAR_ARTIFACT }} --header="Authorization: Bearer ${{ env.GHA_PAT }}"
+            break ;
+        done        
+        ls -al
+      shell: bash
+      env:
+        GHA_PAT: ${{ secrets.GHA_PAT }}
+
 
     - name: Login with Key Vault SP
       uses: azure/login@v1 
