@@ -27,17 +27,25 @@
         "value": {
           "secrets": [
             {
-              "secretName": "MYSQL-SERVER-FULL-NAME",
+              "secretName": "MYSQL-SERVER-NAME",
               "secretValue": "petcliasc"
             },
+            {
+              "secretName": "MYSQL-SERVER-FULL-NAME",
+              "secretValue": "petcliasc.mysql.database.azure.com"
+            },            
             {
               "secretName": "MYSQL-DATABASE-NAME",
               "secretValue": "petclinic"
             },
             {
-              "secretName": "MYSQL-SERVER-ADMIN-LOGIN-NAME",
+              "secretName": "MYSQL-SERVER-ADMIN-NAME",
               "secretValue": "mys_adm"
             },
+            {
+              "secretName": "MYSQL-SERVER-ADMIN-LOGIN-NAME",
+              "secretValue": "mys_adm@petcliasc"
+            },            
             {
               "secretName": "MYSQL-SERVER-ADMIN-PASSWORD",
               "secretValue": "IsTrator42!"
