@@ -304,6 +304,114 @@ jobs:
         GHA_PAT: ${{ secrets.GHA_PAT }}
 
 
+    - name: Download API-Gateway GH Package
+      run: |
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.API_GATEWAY_API_URL }} | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.API_GATEWAY_API_URL }}/$PKG_VER_ID | jq -r .html_url)
+        curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        mkdir $GH_WORKSPACE/${{ env.API_GATEWAY }}
+
+        sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+        sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
+
+        PKG_URL_LOCAL_PATH="pkg_url.txt"
+        cat PKG_HTML_FILE.txt |
+        while IFS= read -r line
+        do
+            echo "line ... |$line|"
+            echo "$line" > $PKG_URL_LOCAL_PATH
+            wget $line -O ${{ env.API_GATEWAY_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
+            break ;
+        done        
+
+        ls -al $GH_WORKSPACE/${{ env.API_GATEWAY }}        
+      shell: bash
+      env:
+        GHA_PAT: ${{ secrets.GHA_PAT }}
+
+    - name: Download Customers-Service GH Package
+      run: |
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.CUSTOMERS_SERVICE_API_URL }} | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.CUSTOMERS_SERVICE_API_URL }}/$PKG_VER_ID | jq -r .html_url)
+        curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        mkdir $GH_WORKSPACE/${{ env.CUSTOMERS_SERVICE }}
+
+        sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+        sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
+
+        PKG_URL_LOCAL_PATH="pkg_url.txt"
+        cat PKG_HTML_FILE.txt |
+        while IFS= read -r line
+        do
+            echo "line ... |$line|"
+            echo "$line" > $PKG_URL_LOCAL_PATH
+            wget $line -O ${{ env.CUSTOMERS_SERVICE_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
+            break ;
+        done        
+
+        ls -al $GH_WORKSPACE/${{ env.CUSTOMERS_SERVICE }}        
+      shell: bash
+      env:
+        GHA_PAT: ${{ secrets.GHA_PAT }}
+
+    - name: Download Vets-Service GH Package
+      run: |
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.VETS_SERVICE_API_URL }} | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.VETS_SERVICE_API_URL }}/$PKG_VER_ID | jq -r .html_url)
+        curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        mkdir $GH_WORKSPACE/${{ env.VETS_SERVICE  }}
+
+        sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+        sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
+
+        PKG_URL_LOCAL_PATH="pkg_url.txt"
+        cat PKG_HTML_FILE.txt |
+        while IFS= read -r line
+        do
+            echo "line ... |$line|"
+            echo "$line" > $PKG_URL_LOCAL_PATH
+            wget $line -O ${{ env.VETS_SERVICE_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
+            break ;
+        done        
+
+        ls -al $GH_WORKSPACE/${{ env.VETS_SERVICE }}        
+      shell: bash
+      env:
+        GHA_PAT: ${{ secrets.GHA_PAT }}
+
+    - name: Download Visits-Service GH Package
+      run: |
+        PKG_VER_ID=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.VISITS_SERVICE_API_URL }} | jq .[0].id)
+        PKG_HTML_URL=$(curl -u username:${{ env.GHA_PAT }} -H "Accept: application/vnd.github.v3+json" ${{ env.VISITS_SERVICE_API_URL }}/$PKG_VER_ID | jq -r .html_url)
+        curl -u username:${{ env.GHA_PAT }} $PKG_HTML_URL | grep "https://github-registry-files.githubusercontent.com" > PKG_HTML_FILE.txt
+
+        mkdir $GH_WORKSPACE/${{ env.VISITS_SERVICE }}
+
+        sed -i 's/                <a href=\"//g' PKG_HTML_FILE.txt
+        sed -i 's/\" class=\"d-flex\">//g' PKG_HTML_FILE.txt
+        sed -i 's/\&amp\;/\&/g' PKG_HTML_FILE.txt
+
+        PKG_URL_LOCAL_PATH="pkg_url.txt"
+        cat PKG_HTML_FILE.txt |
+        while IFS= read -r line
+        do
+            echo "line ... |$line|"
+            echo "$line" > $PKG_URL_LOCAL_PATH
+            wget $line -O ${{ env.VISITS_SERVICE_PACKAGE_PATH }} --header="Authorization: Bearer ${{ env.GHA_PAT }}" --quiet
+            break ;
+        done        
+
+        ls -al $GH_WORKSPACE/${{ env.VISITS_SERVICE }}        
+      shell: bash
+      env:
+        GHA_PAT: ${{ secrets.GHA_PAT }}
+
     - name: Login with Key Vault SP
       uses: azure/login@v1 
       with:
