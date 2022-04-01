@@ -117,6 +117,142 @@ have the CLI extension, you may need to upgrade to the latest using --
 ```
 This will take a few minutes.
 
+
+## Deploy with IaC
+
+See **[Bicep](./iac/bicep/README.md)**
+
+<span style="color:red"> **Be aware that the MySQL DB is NOT deployed in a VNet but network FireWall Rules are Set. So ensure to allow ASC Outbound IP addresses or check the option "Allow public access from any Azure service within Azure to this server" in the Azure Portal / your MySQL DB / Networking / Firewall rules **</span>
+
+## Deploy a Windows VM Client in the VNet
+
+### VM
+```sh
+
+nsg="vnet-azure-spring-cloud-snet-app-nsg-${location}" # "nsg-app-client"
+YOUR_RG="rg-iac-asc-petclinic-mic-srv" # "rg-asc-apps-petclinic"
+
+az network nsg rule create --access Allow --destination-port-range 3389 --name "Allow RDP from local dev station" --nsg-name $nsg -g ${YOUR_RG} --priority 121 --source-address-prefixes "<Your IP Adress>"
+
+# az vm list-sizes --location $location --output table
+# az vm image list-publishers --location $location --output table | grep -i "Microsoft"
+# az vm image list-offers --publisher MicrosoftWindowsServer --location $location --output table
+# az vm image list --publisher MicrosoftWindowsServer --offer WindowsServer --location $location --output table
+
+# az vm image list-publishers --location $location --output table | grep -i Canonical
+# az vm image list-offers --publisher Canonical --location $location --output table
+# az vm image list --publisher Canonical --offer UbuntuServer --location $location --output table
+# az vm image list --publisher Canonical --offer 0001-com-ubuntu-server-focal --location northeurope --output table --all
+
+# az vm image list-publishers --location northeurope --output table | grep -i "Mariner"
+# az vm image list-offers --publisher MicrosoftCBLMariner --location $location --output table
+# az vm image list --publisher MicrosoftCBLMariner --offer cbl-mariner --location $location --output table --all
+
+# --image The name of the operating system image as a URN alias, URN, custom image name or ID, custom image version ID, or VHD blob URI. In addition, it also supports shared gallery image. This parameter is required unless using `--attach-os-disk.`  Valid URN format: "Publisher:Offer:Sku:Version". For more information, see https: //docs.microsoft.com/azure/virtual-machines/linux/cli-ps-findimage.  Values from: az vm image list, az vm image show, az sig image-version show-shared.
+# --image Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202203220
+
+az vm image list-offers --publisher MicrosoftWindowsDesktop --location $location --output table
+az vm image list --publisher MicrosoftWindowsDesktop --offer Windows-11 --location $location --output table
+
+win_client_vm_name="vm-win-pet-cli" #Windows computer name cannot be more than 15 characters long,
+win_vm_admin_username="adm_asc"
+win_vm_admin_pwd="IsTrator4224!" # The password length must be between 12 and 123. 
+rg_name="rg-iac-asc-petclinic-mic-srv"
+vnet_name="vnet-azure-spring-cloud"
+appSubnet="snet-app"
+nsg="vnet-azure-spring-cloud-snet-app-nsg-${location}"
+
+az vm create --name $win_client_vm_name \
+    --image MicrosoftWindowsDesktop:windows-11:win11-21h2-pron:22000.556.220303 \
+    --admin-username $win_vm_admin_username \
+    --admin-password $win_vm_admin_pwd \
+    --resource-group $rg_name \
+    --vnet-name $vnet_name \
+    --subnet $appSubnet \
+    --nsg $nsg \
+    --size Standard_B2s \
+    --location $location \
+    --output table
+    # --zone 1
+
+network_interface_id=$(az vm show --name $win_client_vm_name -g $rg_name --query 'networkProfile.networkInterfaces[0].id' -o tsv)
+echo "ASC Pet Clinic windows Client VM Network Interface ID :" $network_interface_id
+
+network_interface_private_ip=$(az resource show --ids $network_interface_id \
+    --query 'properties.ipConfigurations[0].properties.privateIPAddress' -o tsv)
+echo "Network Interface private IP :" $network_interface_private_ip
+
+network_interface_pub_ip_id=$(az resource show --ids $network_interface_id \
+    --query 'properties.ipConfigurations[0].properties.publicIPAddress.id' -o tsv)
+
+network_interface_pub_ip=$(az network public-ip show -g $rg_name --id $network_interface_pub_ip_id --query "ipAddress" -o tsv)
+echo "Network Interface public  IP :" $network_interface_pub_ip
+```
+You can now use RDP to connect to your Windows client VM.
+
+Now, the Bicep IaC should have configured the Azure Private DNS Zone, as explained in the [docs](https://docs.microsoft.com/en-us/azure/spring-cloud/access-app-virtual-network?tabs=azure-portal)
+
+```sh
+rg_name="rg-iac-asc-petclinic-mic-srv"
+rg_asc_apps_name="rg-asc-apps-petclinic"
+rg_asc_svc_run_name="rg-asc-svc-run-petclinic"
+
+ASC_INSTANCE_NAME="asc-petcliasc"
+PRIVATE_DNS_ZONE="private.azuremicroservices.io"
+ASC_PRIVATE_DNS_LINK_NAME="dns-lnk-asc"
+vnet_name="vnet-azure-spring-cloud"
+az network private-dns zone create --name ${PRIVATE_DNS_ZONE} -g  $rg_name
+az network private-dns link vnet list -g $rg_name --zone-name ${PRIVATE_DNS_ZONE}
+
+vnet_id=$(az network vnet show --resource-group $rg_name --name $vnet_name --query id -o tsv)
+echo "VNet Id :" $vnet_id
+
+az network private-dns link vnet create \
+  --resource-group $rg_name \
+  --zone-name ${PRIVATE_DNS_ZONE} \
+  --name $ASC_PRIVATE_DNS_LINK_NAME \
+  --virtual-network $vnet_id \
+  --registration-enabled false
+
+private_dns_link_id=$(az network private-dns link vnet show --name $ASC_PRIVATE_DNS_LINK_NAME --zone-name ${PRIVATE_DNS_ZONE} -g $rg_name --query "id" --output tsv)
+echo "Azure Spring Cloud Private-Link DNS ID :" $private_dns_link_id
+
+APPS_AKS_LB_FRONT_IP_ID=$(az network lb show --name "kubernetes-internal" -g $rg_asc_apps_name --query 'frontendIpConfigurations[0].id' --output tsv)
+APPS_AKS_LB_FRONT_IP_NAME=$(az network lb show --name "kubernetes-internal" -g $rg_asc_apps_name --query "frontendIpConfigurations[0].name" --output tsv)
+
+ASC_SVC_RUN_AKS_LB_FRONT_IP_ID=$(az network lb show --name "kubernetes-internal" -g $rg_asc_svc_run_name --query 'frontendIpConfigurations[0].id' --output tsv)
+ASC_SVC_RUN_AKS_LB_FRONT_IP_NAME=$(az network lb show --name "kubernetes-internal" -g $rg_asc_svc_run_name --query "frontendIpConfigurations[0].name" --output tsv)
+
+ASC_APPS_LB_PRV_IP=$(az network lb frontend-ip show --lb-name "kubernetes-internal" --name $APPS_AKS_LB_FRONT_IP_NAME -g $rg_asc_apps_name --query privateIpAddress -o tsv)
+
+ASC_SVC_RUN_LB_PRV_IP=$(az network lb frontend-ip show --lb-name "kubernetes-internal" --name $ASC_SVC_RUN_AKS_LB_FRONT_IP_NAME -g $rg_asc_svc_run_name --query privateIpAddress -o tsv)
+
+az network private-dns record-set a create --name $ASC_INSTANCE_NAME --zone-name ${PRIVATE_DNS_ZONE}  -g $rg_name
+
+az network private-dns record-set a add-record -g $rg_name \
+  --record-set-name $ASC_INSTANCE_NAME \
+  --zone-name ${PRIVATE_DNS_ZONE} \
+  --ipv4-address $ASC_APPS_LB_PRV_IP
+
+az network private-dns record-set a add-record -g $rg_name \
+  --record-set-name "$ASC_INSTANCE_NAME.test" \
+  --zone-name ${PRIVATE_DNS_ZONE} \
+  --ipv4-address $ASC_APPS_LB_PRV_IP
+
+#az network private-dns record-set a add-record -g $rg_name \
+#  --record-set-name $xxx \
+#  --zone-name ${PRIVATE_DNS_ZONE} \
+#  --ipv4-address $ASC_SVC_RUN_LB_PRV_IP
+```
+
+Now Validate private DNS link connection
+From the windows client VM inside athe Azure Spring Cloud VNet with private zone, then nslookup will resolve to the private ip.
+
+```sh
+nslookup ${ASC_INSTANCE_NAME}.${PRIVATE_DNS_ZONE}
+nslookup $ASC_INSTANCE_NAME
+```
+
 ## Unit-1 - Deploy and monitor Spring Boot apps
 
 ### Prepare your environment for deployments
@@ -361,71 +497,6 @@ Create a MySQL database in Azure Database for MySQL.
      --server ${MYSQL_SERVER_NAME} --value "US/Pacific"
 ```
 
-## Deploy a Windows VM Client in the VNet
-
-### VM
-```sh
-
-nsg="vnet-azure-spring-cloud-snet-app-nsg-${location}" # "nsg-app-client"
-YOUR_RG="rg-iac-asc-petclinic-mic-srv" # "rg-asc-apps-petclinic"
-
-az network nsg rule create --access Allow --destination-port-range 3389 --name "Allow RDP from local dev station" --nsg-name $nsg -g ${YOUR_RG} --priority 121 --source-address-prefixes "<Your IP Adress>"
-
-# az vm list-sizes --location $location --output table
-# az vm image list-publishers --location $location --output table | grep -i "Microsoft"
-# az vm image list-offers --publisher MicrosoftWindowsServer --location $location --output table
-# az vm image list --publisher MicrosoftWindowsServer --offer WindowsServer --location $location --output table
-
-az vm image list-offers --publisher MicrosoftWindowsDesktop --location $location --output table
-az vm image list --publisher MicrosoftWindowsDesktop --offer Windows-11 --location $location --output table
-
-# az vm image list-publishers --location $location --output table | grep -i Canonical
-# az vm image list-offers --publisher Canonical --location $location --output table
-# az vm image list --publisher Canonical --offer UbuntuServer --location $location --output table
-# az vm image list --publisher Canonical --offer 0001-com-ubuntu-server-focal --location northeurope --output table --all
-
-# az vm image list-publishers --location northeurope --output table | grep -i "Mariner"
-# az vm image list-offers --publisher MicrosoftCBLMariner --location $location --output table
-# az vm image list --publisher MicrosoftCBLMariner --offer cbl-mariner --location $location --output table --all
-
-# --image The name of the operating system image as a URN alias, URN, custom image name or ID, custom image version ID, or VHD blob URI. In addition, it also supports shared gallery image. This parameter is required unless using `--attach-os-disk.`  Valid URN format: "Publisher:Offer:Sku:Version". For more information, see https: //docs.microsoft.com/azure/virtual-machines/linux/cli-ps-findimage.  Values from: az vm image list, az vm image show, az sig image-version show-shared.
-# --image Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202203220
-
-win_client_vm_name="vm-win-pet-cli" #Windows computer name cannot be more than 15 characters long,
-win_vm_admin_username="adm_asc"
-win_vm_admin_pwd="IsTrator4224!" # The password length must be between 12 and 123. 
-rg_name="rg-iac-asc-petclinic-mic-srv"
-vnet_name="vnet-azure-spring-cloud"
-appSubnet="snet-app"
-nsg="vnet-azure-spring-cloud-snet-app-nsg-${location}"
-
-az vm create --name $win_client_vm_name \
-    --image MicrosoftWindowsDesktop:windows-11:win11-21h2-pron:22000.556.220303 \
-    --admin-username $win_vm_admin_username \
-    --admin-password $win_vm_admin_pwd \
-    --resource-group $rg_name \
-    --vnet-name $vnet_name \
-    --subnet $appSubnet \
-    --nsg $nsg \
-    --size Standard_B2s \
-    --location $location \
-    --output table
-    # --zone 1
-
-network_interface_id=$(az vm show --name $win_client_vm_name -g $rg_name --query 'networkProfile.networkInterfaces[0].id' -o tsv)
-echo "ASC Pet Clinic windows Client VM Network Interface ID :" $network_interface_id
-
-network_interface_private_ip=$(az resource show --ids $network_interface_id \
-    --query 'properties.ipConfigurations[0].properties.privateIPAddress' -o tsv)
-echo "Network Interface private IP :" $network_interface_private_ip
-
-network_interface_pub_ip_id=$(az resource show --ids $network_interface_id \
-    --query 'properties.ipConfigurations[0].properties.publicIPAddress.id' -o tsv)
-
-network_interface_pub_ip=$(az network public-ip show -g $rg_name --id $network_interface_pub_ip_id --query "ipAddress" -o tsv)
-echo "Network Interface public  IP :" $network_interface_pub_ip
-```
-You can now use RDP to connect to your Windows client VM.
 
 ### Container
 TODO
@@ -433,7 +504,7 @@ TODO
 ### Deploy Spring Boot applications and set environment variables
 
 Deploy Spring Boot applications to Azure 
-<span style="color:red"> ** You do NOT need to deploy a self-hosted GitHub Action runner in the VM created previously **
+<span style="color:red"> **You do NOT need to deploy a self-hosted GitHub Action runner in the VM created previously**</span>
 
 ```bash
 # https://github.com/MicrosoftDocs/azure-docs/issues/90220 : production deployment must be created first
@@ -765,6 +836,8 @@ Finally, edit the workflow file `.github/workflows/action.yml` in your forked re
 env:
   SPRING_CLOUD_SERVICE: azure-spring-cloud-name # name of your Azure Spring Cloud instance
   KEYVAULT: your-keyvault-name # customize this
+  DEPLOYMENT_JVM_OPTIONS: -Dazure.keyvault.uri=https://<your-keyvault-name>.vault.azure.net -Xms512m -Xmx1024m -Dspring.profiles.active=mysql,key-vault,cloud
+
 ```
 
 
