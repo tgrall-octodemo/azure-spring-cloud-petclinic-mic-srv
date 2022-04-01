@@ -513,7 +513,7 @@ jobs:
         service-name: ${{ env.SPRING_CLOUD_SERVICE }}
         app-name: ${{ env.VETS_SERVICE }}
         use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: ${{ env.VETS_SERVICE_DEPLOYMENT }}
+        package: ${{ env.VETS_SERVICE_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
         environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} \
