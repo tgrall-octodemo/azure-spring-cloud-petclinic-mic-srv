@@ -391,6 +391,7 @@ Setup diagnostics and publish logs and metrics from Spring Boot apps to Azure Lo
 ### Load Spring Cloud Config Server
 
 Use the `application.yml` in the root of this project to load configuration into the Config Server in Azure Spring Cloud.
+https://github.com/azure-samples/spring-petclinic-microservices-config has been replaced by [https://github.com/ezYakaEagle442/spring-petclinic-microservices-config](https://github.com/ezYakaEagle442/spring-petclinic-microservices-config/blob/main/application.yml) to enforce TLS
 
 ```bash
     az spring-cloud config-server set \
