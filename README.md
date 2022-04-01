@@ -697,10 +697,12 @@ If you do not have a Key Vault yet, run the following commands to provision a Ke
 
 Add the MySQL secrets to your Key Vault:
 ```bash
+    az keyvault secret set --vault-name ${KEY_VAULT} --name "MYSQL_SERVER_NAME" --value ${MYSQL_SERVER_NAME}
     az keyvault secret set --vault-name ${KEY_VAULT} --name "MYSQL-SERVER-FULL-NAME" --value ${MYSQL_SERVER_FULL_NAME}
-    az keyvault secret set --vault-name ${KEY_VAULT} --name "MYSQL-DATABASE-NAME" --value ${MYSQL_DATABASE_NAME}
+    az keyvault secret set --vault-name ${KEY_VAULT} --name "MYSQL-SERVER-ADMIN-NAME" --value ${MYSQL_SERVER_ADMIN_NAME}
     az keyvault secret set --vault-name ${KEY_VAULT} --name "MYSQL-SERVER-ADMIN-LOGIN-NAME" --value ${MYSQL_SERVER_ADMIN_LOGIN_NAME}
     az keyvault secret set --vault-name ${KEY_VAULT} --name "MYSQL-SERVER-ADMIN-PASSWORD" --value ${MYSQL_SERVER_ADMIN_PASSWORD}
+    az keyvault secret set --vault-name ${KEY_VAULT} --name "MYSQL-DATABASE-NAME" --value ${MYSQL_DATABASE_NAME}
 ```
 
 Create a service principle with enough scope/role to manage your Azure Spring Cloud instance:
