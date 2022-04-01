@@ -475,36 +475,6 @@ jobs:
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
 
-    - name: Deploy admin-server
-      uses:  Azure/spring-cloud-deploy@v1
-      with:
-        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
-        action: deploy
-        service-name: ${{ env.SPRING_CLOUD_SERVICE }}
-        app-name: ${{ env.ADMIN_SERVER }}
-        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: ${{ env.ADMIN_SERVER_PACKAGE_PATH }}
-        jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}   
-        deployment-name:  ${{ env.ADMIN_SERVER_DEPLOYMENT }}
-        create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
-        version: ${{ env.DEPLOYMENT_VERSION }} 
-        runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
-
-    - name: Deploy api-gateway
-      uses: Azure/spring-cloud-deploy@v1
-      with:
-        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
-        action: deploy
-        service-name: ${{ env.SPRING_CLOUD_SERVICE }}
-        app-name: ${{ env.API_GATEWAY }}
-        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
-        package: ${{ env.API_GATEWAY_PACKAGE_PATH }}
-        jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
-        deployment-name:  ${{ env.API_GATEWAY_DEPLOYMENT }}
-        create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
-        version: ${{ env.DEPLOYMENT_VERSION }} 
-        runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }} 
- 
     - name: Deploy vets-service
       uses: Azure/spring-cloud-deploy@v1
       with:
@@ -565,6 +535,36 @@ jobs:
         version: ${{ env.DEPLOYMENT_VERSION }} 
         runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
 
+    - name: Deploy api-gateway
+      uses: Azure/spring-cloud-deploy@v1
+      with:
+        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
+        action: deploy
+        service-name: ${{ env.SPRING_CLOUD_SERVICE }}
+        app-name: ${{ env.API_GATEWAY }}
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
+        package: ${{ env.API_GATEWAY_PACKAGE_PATH }}
+        jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
+        deployment-name:  ${{ env.API_GATEWAY_DEPLOYMENT }}
+        create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
+        version: ${{ env.DEPLOYMENT_VERSION }} 
+        runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }} 
+
+    - name: Deploy admin-server
+      uses:  Azure/spring-cloud-deploy@v1
+      with:
+        azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
+        action: deploy
+        service-name: ${{ env.SPRING_CLOUD_SERVICE }}
+        app-name: ${{ env.ADMIN_SERVER }}
+        use-staging-deployment: ${{ env.DEPLOYMENT_STAGING }}
+        package: ${{ env.ADMIN_SERVER_PACKAGE_PATH }}
+        jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}   
+        deployment-name:  ${{ env.ADMIN_SERVER_DEPLOYMENT }}
+        create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
+        version: ${{ env.DEPLOYMENT_VERSION }} 
+        runtime-version: ${{ env.DEPLOYMENT_RUNTIME_VERSION }}
+        
     - name: Disable local IP access to the Key Vault
       uses: azure/CLI@v1
       if: ${{ always() }}
