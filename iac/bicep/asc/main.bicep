@@ -187,20 +187,6 @@ module roleAssignments 'roleAssignments.bicep' = {
   ]  
 }
 
-module mysql '../mysql/mysql.bicep' = {
-  name: 'mysqldb'
-  params: {
-    appName: appName
-    location: location
-    clientIPAddress: clientIPAddress
-    startIpAddress: startIpAddress
-    endIpAddress: endIpAddress
-    administratorLogin: administratorLogin
-    administratorLoginPassword: administratorLoginPassword
-  }
-}
-
-
 module azurespringcloud 'asc.bicep' = {
   name: 'azurespringcloud'
   // scope: resourceGroup(rg.name)
@@ -224,12 +210,26 @@ module azurespringcloud 'asc.bicep' = {
     appInsightsName: appInsightsName
     appInsightsDiagnosticSettingsName: appInsightsDiagnosticSettingsName
     zoneRedundant: zoneRedundant
-    mySQLResourceID: mysql.outputs.mySQLResourceID
   }
   dependsOn: [
     roleAssignments
   ]
 }
+
+module mysql '../mysql/mysql.bicep' = {
+  name: 'mysqldb'
+  params: {
+    appName: appName
+    location: location
+    clientIPAddress: clientIPAddress
+    startIpAddress: startIpAddress
+    endIpAddress: endIpAddress
+    administratorLogin: administratorLogin
+    administratorLoginPassword: administratorLoginPassword
+    azureSpringCloudOutboundPubIP: azurespringcloud.outputs.azureSpringCloudOutboundPubIP
+  }
+}
+
 
 
 var vNetRules = [

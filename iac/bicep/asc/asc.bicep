@@ -79,8 +79,8 @@ param buildName string = '${appName}-build'
 @description('The Azure Spring Cloud Build service name. Only "{azureSpringCloudInstanceName}/default" is supported') // to be checked
 param buildServiceName string = '${azureSpringCloudInstanceName}/default' // '{your-service-name}/default/default'  //{your-service-name}/{build-service-name}/{agenpool-name}
 
-@description('MySQL ResourceID')
-param mySQLResourceID string
+// @description('MySQL ResourceID')
+// param mySQLResourceID string
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/workspaces?tabs=bicep
 resource logAnalyticsWorkspace  'Microsoft.OperationalInsights/workspaces@2020-10-01' = {
@@ -113,7 +113,7 @@ resource azurespringcloud 'Microsoft.AppPlatform/Spring@2022-01-01-preview' = {
 
 output azureSpringCloudResourceId string = azurespringcloud.id
 output azureSpringCloudFQDN string = azurespringcloud.properties.fqdn
-output azureSpringCloudoutboundPubIP string = azurespringcloud.properties.networkProfile.outboundIPs.publicIPs[0]
+output azureSpringCloudOutboundPubIP string = azurespringcloud.properties.networkProfile.outboundIPs.publicIPs[0]
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/components?tabs=bicep
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {

@@ -13,6 +13,9 @@ param administratorLogin string = 'mys_adm'
 @description('The MySQL DB Admin Password.')
 param administratorLoginPassword string
 
+@description('Azure Spring Cloud Outbound Public IP')
+param azureSpringCloudOutboundPubIP string
+
 @description('Allow client workstation for local Dev/Test only')
 param clientIPAddress string
 
@@ -83,7 +86,7 @@ resource mysqlserver 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
 output mySQLResourceID string = mysqlserver.id
 
 // Add firewall config to allow Azure Spring Cloud :
-// virtualNetworkRules to Allow public access from Azure services 
+// virtualNetwor FirewallRules to Allow public access from Azure services 
 resource fwRuleAzureSpringCloudApps 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2021-05-01' = {
   name: 'Allow-Azure-Spring-Cloud-Apps'
   parent: mysqlserver
@@ -102,3 +105,25 @@ resource fwRuleClientIPAddress 'Microsoft.DBforMySQL/flexibleServers/firewallRul
     endIpAddress: clientIPAddress
   }
 }
+
+ // Allow Azure Spring Cloud
+ resource fwRuleAllowAzureSpringCloud 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2021-05-01' = {
+  name: 'Allow Azure Spring Cloud'
+  parent: mysqlserver
+  properties: {
+    startIpAddress: azureSpringCloudOutboundPubIP
+    endIpAddress: azureSpringCloudOutboundPubIP
+  }
+}
+
+ // /!\ SECURITY Risk: Allow ANY HOST for local Dev/Test only
+ /*
+ resource fwRuleAllowAnyHost 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2021-05-01' = {
+  name: 'Allow Any Host'
+  parent: mysqlserver
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '255.255.255.255'
+  }
+}
+*/
