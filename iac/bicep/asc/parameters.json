@@ -44,7 +44,7 @@
             },
             {
               "secretName": "MYSQL-SERVER-ADMIN-LOGIN-NAME",
-              "secretValue": "mys_adm@petcliasc"
+              "secretValue": "mys_adm"
             },            
             {
               "secretName": "MYSQL-SERVER-ADMIN-PASSWORD",
