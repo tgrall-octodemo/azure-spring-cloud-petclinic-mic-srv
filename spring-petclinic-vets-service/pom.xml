@@ -97,10 +97,17 @@
             <artifactId>hsqldb</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- 
+        MySQL Connector/J 8.0 is highly recommended for use with MySQL Server 8.0 and 5.7    
+        https://dev.mysql.com/doc/connector-j/8.0/en/ 
+        https://mvnrepository.com/artifact/mysql/mysql-connector-java
+        https://repo.maven.apache.org/maven2/mysql/mysql-connector-java/
+         -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
+            <!-- <version>8.0.28</version> -->
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
