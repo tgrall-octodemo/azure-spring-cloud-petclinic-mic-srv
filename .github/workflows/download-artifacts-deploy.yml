@@ -30,7 +30,7 @@ env:
   # ==== Azure Spring Cloud Apps Deployment params ====:
 
   # customize this
-  DEPLOYMENT_JVM_OPTIONS: -Dazure.keyvault.uri=https://kv-petcliasc42.vault.azure.net -Xms512m -Xmx1024m --spring.profiles.active=mysql,key-vault,cloud # -Dspring.profiles.active=mysql,key-vault,cloud
+  DEPLOYMENT_JVM_OPTIONS: -Dazure.keyvault.uri=https://kv-petcliasc42.vault.azure.net -Xms512m -Xmx1024m -Dspring.profiles.active=mysql,key-vault,cloud # -Dspring.profiles.active=mysql,key-vault,cloud
   
   DEPLOYMENT_VERSION: 2.6.3
   DEPLOYMENT_RUNTIME_VERSION: Java_11
