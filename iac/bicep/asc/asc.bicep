@@ -192,28 +192,6 @@ resource azurespringcloudmonitoringSettings 'Microsoft.AppPlatform/Spring/monito
   }
 }
 
-// https://docs.microsoft.com/en-us/azure/templates/microsoft.appplatform/spring/apps?tabs=bicep
-resource discoveryserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
-  name: 'discovery-server'
-  location: location
-  parent: azurespringcloud
-  identity: {
-    // principalId: 'string' is a READ-ONLY attribute
-    // tenantId: tenantId is a READ-ONLY attribute
-    type: 'SystemAssigned'
-  }
-  properties: {
-    addonConfigs: {}
-    // fqdn: 'string'
-    httpsOnly: false
-    public: true
-    temporaryDisk: {
-      mountPath: '/tmp'
-      sizeInGB: 5
-    }
-  }
-}
-output discoveryServerIdentity string = discoveryserverapp.identity.principalId
 
 resource adminserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
   name: 'admin-server'
@@ -236,28 +214,6 @@ resource adminserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' =
   }
 }
 output adminServerIdentity string = adminserverapp.identity.principalId
-
-resource configserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
-  name: 'config-server'
-  location: location
-  parent: azurespringcloud
-  identity: {
-    // principalId: 'string'
-    // tenantId: tenantId is a READ-ONLY attribute
-    type: 'SystemAssigned'
-  }
-  properties: {
-    addonConfigs: {}
-    // fqdn: 'string'
-    httpsOnly: false
-    public: true
-    temporaryDisk: {
-      mountPath: '/tmp'
-      sizeInGB: 5
-    }
-  }
-}
-output configServerIdentity string = configserverapp.identity.principalId
 
 
 resource customersserviceapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
@@ -360,6 +316,54 @@ resource azurespringcloudconfigserver 'Microsoft.AppPlatform/Spring/configServer
 
   }
 }
+
+/*
+resource configserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
+  name: 'config-server'
+  location: location
+  parent: azurespringcloud
+  identity: {
+    // principalId: 'string'
+    // tenantId: tenantId is a READ-ONLY attribute
+    type: 'SystemAssigned'
+  }
+  properties: {
+    addonConfigs: {}
+    // fqdn: 'string'
+    httpsOnly: false
+    public: true
+    temporaryDisk: {
+      mountPath: '/tmp'
+      sizeInGB: 5
+    }
+  }
+}
+output configServerIdentity string = configserverapp.identity.principalId
+
+// https://docs.microsoft.com/en-us/azure/templates/microsoft.appplatform/spring/apps?tabs=bicep
+resource discoveryserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {
+  name: 'discovery-server'
+  location: location
+  parent: azurespringcloud
+  identity: {
+    // principalId: 'string' is a READ-ONLY attribute
+    // tenantId: tenantId is a READ-ONLY attribute
+    type: 'SystemAssigned'
+  }
+  properties: {
+    addonConfigs: {}
+    // fqdn: 'string'
+    httpsOnly: false
+    public: true
+    temporaryDisk: {
+      mountPath: '/tmp'
+      sizeInGB: 5
+    }
+  }
+}
+output discoveryServerIdentity string = discoveryserverapp.identity.principalId
+*/
+
 
 /*
 

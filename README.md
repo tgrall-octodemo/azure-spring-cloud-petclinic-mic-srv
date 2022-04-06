@@ -122,7 +122,7 @@ This will take a few minutes.
 
 See **[Bicep](./iac/bicep/README.md)**
 
-<span style="color:red"> **Be aware that the MySQL DB is NOT deployed in a VNet but network FireWall Rules are Set. So ensure to allow ASC Outbound IP addresses or check the option "Allow public access from any Azure service within Azure to this server" in the Azure Portal / your MySQL DB / Networking / Firewall rules **</span>
+<span style="color:red"> **Be aware that the MySQL DB is NOT deployed in a VNet but network FireWall Rules are Set. So ensure to allow ASC Outbound IP addresses or check the option "Allow public access from any Azure service within Azure to this server" in the Azure Portal / your MySQL DB / Networking / Firewall rules**</span>
 
 ## Deploy a Windows VM Client in the VNet
 
