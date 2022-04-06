@@ -19,11 +19,13 @@ env:
   # ==== APPS ====:
   API_GATEWAY: api-gateway
   ADMIN_SERVER: admin-server
-  CONFIG_SERVER: config-server
   CUSTOMERS_SERVICE: customers-service
-  DISCOVERY_SERVER: discovery-server
   VETS_SERVICE: vets-service
   VISITS_SERVICE: visits-service
+
+  # useless as config & discovery server are managed by Azure Spring Cloud
+  CONFIG_SERVER: config-server
+  DISCOVERY_SERVER: discovery-server
 
   PRJ_PREFIX: spring-petclinic
 
