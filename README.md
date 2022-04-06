@@ -190,6 +190,13 @@ echo "Network Interface public  IP :" $network_interface_pub_ip
 ```
 You can now use RDP to connect to your Windows client VM.
 
+Note: you can not setup WSL2 on all Azure VM , D_v3 should support nested virtualization , see :
+- [https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/user-guide/nested-virtualization](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/user-guide/nested-virtualization)
+- [https://docs.microsoft.com/en-us/answers/questions/442463/error-when-enabling-wsl2-in-azure-vm.html](https://docs.microsoft.com/en-us/answers/questions/442463/error-when-enabling-wsl2-in-azure-vm.html)
+
+
+
+
 Now, the Bicep IaC should have configured the Azure Private DNS Zone, as explained in the [docs](https://docs.microsoft.com/en-us/azure/spring-cloud/access-app-virtual-network?tabs=azure-portal)
 
 ```sh
