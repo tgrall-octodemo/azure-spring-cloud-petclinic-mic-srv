@@ -43,6 +43,9 @@ public class VetsServiceApplication {
 		System.out.println("Checking ENV variable AZURE_TENANT_ID : |" + System.getenv("AZURE_TENANT_ID") + "|\n");
 		System.out.println("Checking ENV variable AZURE_CLIENT_ID : |" + System.getenv("AZURE_CLIENT_ID") + "|\n");
 
+		System.out.println("Checking ENV variable SPRING_PROFILES_ACTIVE : |" + System.getenv("SPRING_PROFILES_ACTIVE") + "|\n");
+		System.out.println("Checking ENV variable AZURE_KEYVAULT_URI : |" + System.getenv("AZURE_KEYVAULT_URI") + "|\n");
+
 		System.out.println("Checking property azure.keyvault.uri : |" + System.getProperty("azure.keyvault.uri") + "|\n");
 		System.out.println("Checking property spring.profiles.active : |" + System.getProperty("spring.profiles.active") + "|\n");
 
