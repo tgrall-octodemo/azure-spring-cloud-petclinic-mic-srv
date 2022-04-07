@@ -72,7 +72,10 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- Azure Key Vault -->
+            <!-- 
+            Azure Key Vault 
+            https://microsoft.github.io/spring-cloud-azure/current/reference/html/appendix.html#migration-guide-for-4-0
+            -->
             <dependency>
                 <groupId>com.azure.spring</groupId>
                 <artifactId>spring-cloud-azure-dependencies</artifactId>
