@@ -69,6 +69,7 @@ public class VetsServiceApplication {
         }
         catch (Exception e) {
 			System.err.println( "Cannot Execute Telnet");
+			e.printStackTrace();
         }
 
 		try {
@@ -77,8 +78,8 @@ public class VetsServiceApplication {
         }
         catch (Exception e) {
 			System.err.println("Cannot Execute Netcat");
+			e.printStackTrace();
         }
-
 
 		SpringApplication.run(VetsServiceApplication.class, args);
 	}
