@@ -86,7 +86,8 @@ public class VetsServiceApplication {
 		*/
 		TelnetClient telnetClient = new TelnetClient();
 		try {
-			telnetClient.connect("petcliasc.mysql.database.azure.com", 3306);
+			// telnetClient.connect("petcliasc.mysql.database.azure.com", 3306);
+			telnetClient.connect(System.getenv("MYSQL_SERVER_FULL_NAME"), 3306);
 			System.out.println( "SUCCESSFULLY executed TelnetClient");
 			telnetClient.disconnect();
         }
