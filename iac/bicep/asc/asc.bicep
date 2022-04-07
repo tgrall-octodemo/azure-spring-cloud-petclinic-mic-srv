@@ -40,6 +40,7 @@ param azureSpringCloudSkuName string = 'S0'
 @description('The Azure Spring Cloud SKU Tier. Check it out at https://docs.microsoft.com/en-us/rest/api/azurespringcloud/skus/list#code-try-0')
 param azureSpringCloudTier string = 'Standard'
 
+param vnetName string = 'vnet-azure-spring-cloud'
 param appNetworkResourceGroup string 
 param serviceRuntimeNetworkResourceGroup string 
 param appSubnetId string 
@@ -316,6 +317,23 @@ resource azurespringcloudconfigserver 'Microsoft.AppPlatform/Spring/configServer
 
   }
 }
+
+module dnsprivatezone './dns.bicep' = {
+  name: 'dns-private-zone'
+  params: {
+     location: location
+     vnetName: vnetName
+     azureSpringCloudInstanceName: azureSpringCloudInstanceName
+     appNetworkResourceGroup: appNetworkResourceGroup
+     serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
+  }
+  dependsOn: [
+    azurespringcloud
+  ]     
+}
+
+
+
 
 /*
 resource configserverapp 'Microsoft.AppPlatform/Spring/apps@2022-03-01-preview' = {

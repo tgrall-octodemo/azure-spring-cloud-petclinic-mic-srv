@@ -1,3 +1,10 @@
+/*
+Test with
+az deployment group create --name iac-101-asc-dns -f ./asc/dns.bicep -g rg-iac-asc-petclinic-mic-srv \
+    -p azureSpringCloudInstanceName=petcliasc --debug 
+ --what-if to test like a dry-run
+*/
+
 @description('A UNIQUE name')
 @maxLength(20)
 param appName string = '101-${uniqueString(deployment().name)}'
