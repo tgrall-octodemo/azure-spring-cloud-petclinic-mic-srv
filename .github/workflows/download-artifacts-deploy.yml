@@ -459,10 +459,7 @@ jobs:
         package: ${{ env.VETS_SERVICE_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
-        environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} \
-        -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} \
-        -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
-        -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"    
+        environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"    
         deployment-name:  ${{ env.VETS_SERVICE_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
@@ -479,10 +476,7 @@ jobs:
         package: ${{ env.VISITS_SERVICE_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
-        environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} \
-        -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} \
-        -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
-        -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
+        environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
         deployment-name:  ${{ env.VISITS_SERVICE_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
@@ -499,10 +493,7 @@ jobs:
         package: ${{ env.CUSTOMERS_SERVICE_PACKAGE_PATH }}
         jvm-options: ${{ env.DEPLOYMENT_JVM_OPTIONS }}
         # Environment variables to be entered using the syntax '-key value'. Values containing spaces should be enclosed in double quotes.
-        environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} \
-        -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} \
-        -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} \
-        -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
+        environment-variables: "-MYSQL_SERVER_FULL_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-FULL-NAME }} -MYSQL_DATABASE_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-DATABASE-NAME }} -MYSQL_SERVER_ADMIN_LOGIN_NAME ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-LOGIN-NAME }} -MYSQL_SERVER_ADMIN_PASSWORD ${{ steps.mysqlsecrets.outputs.MYSQL-SERVER-ADMIN-PASSWORD }}"
         deployment-name:  ${{ env.CUSTOMERS_SERVICE_DEPLOYMENT }}
         create-new-deployment: ${{ env.DEPLOYMENT_CREATE_NEW }}
         version: ${{ env.DEPLOYMENT_VERSION }} 
