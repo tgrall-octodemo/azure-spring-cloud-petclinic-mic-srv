@@ -38,17 +38,20 @@ public class VetsServiceApplication {
 	public static void main(String[] args) {
 	
 		System.out.println("Checking ENV variables ..."+ "\n");
-		System.out.println("Checking ENV variable azure.keyvault.uri : |" + System.getenv("azure.keyvault.uri") + "|\n");
-		System.out.println("Checking ENV variable spring.profiles.active : |" + System.getenv("spring.profiles.active") + "|\n");
+		System.out.println("Checking azure.keyvault.uri : |" + System.getProperty("azure.keyvault.uri") + "|\n");
+		System.out.println("Checking spring.profiles.active : |" + System.getProperty("spring.profiles.active") + "|\n");
+
 		System.out.println("Checking ENV variable MYSQL_SERVER_FULL_NAME : |" + System.getenv("MYSQL_SERVER_FULL_NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL_DATABASE_NAME : |" + System.getenv("MYSQL_DATABASE_NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL_SERVER_ADMIN_LOGIN_NAME : |" + System.getenv("MYSQL_SERVER_ADMIN_LOGIN_NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL_SERVER_ADMIN_PASSWORD : |" + System.getenv("MYSQL_SERVER_ADMIN_PASSWORD") + "|\n");
 
+		/*
 		System.out.println("Checking ENV variable MYSQL-SERVER-FULL-NAME : |" + System.getenv("MYSQL-SERVER-FULL-NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL-DATABASE-NAME : |" + System.getenv("MYSQL-DATABASE-NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL-SERVER-ADMIN-LOGIN_NAME : |" + System.getenv("MYSQL-SERVER-ADMIN-LOGIN_NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL-SERVER-ADMIN-PASSWORD : |" + System.getenv("MYSQL-SERVER-ADMIN-PASSWORD") + "|\n");
+		*/
 
         String systemipaddress = "";
         try {
