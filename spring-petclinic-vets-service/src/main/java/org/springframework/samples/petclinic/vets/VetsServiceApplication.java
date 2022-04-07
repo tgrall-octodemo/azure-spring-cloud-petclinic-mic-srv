@@ -21,6 +21,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.samples.petclinic.vets.system.VetsProperties;
 
+import java.net.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 /**
  * @author Maciej Szarlinski
  */
@@ -38,10 +42,43 @@ public class VetsServiceApplication {
 		System.out.println("Checking ENV variable MYSQL_DATABASE_NAME : |" + System.getenv("MYSQL_DATABASE_NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL_SERVER_ADMIN_LOGIN_NAME : |" + System.getenv("MYSQL_SERVER_ADMIN_LOGIN_NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL_SERVER_ADMIN_PASSWORD : |" + System.getenv("MYSQL_SERVER_ADMIN_PASSWORD") + "|\n");
+
 		System.out.println("Checking ENV variable MYSQL-SERVER-FULL-NAME : |" + System.getenv("MYSQL-SERVER-FULL-NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL-DATABASE-NAME : |" + System.getenv("MYSQL-DATABASE-NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL-SERVER-ADMIN-LOGIN_NAME : |" + System.getenv("MYSQL-SERVER-ADMIN-LOGIN_NAME") + "|\n");
 		System.out.println("Checking ENV variable MYSQL-SERVER-ADMIN-PASSWORD : |" + System.getenv("MYSQL-SERVER-ADMIN-PASSWORD") + "|\n");
+
+        String systemipaddress = "";
+        try {
+            URL url_name = new URL("http://whatismyip.akamai.com");
+            BufferedReader sc = new BufferedReader(new InputStreamReader(url_name.openStream()));
+            systemipaddress = sc.readLine().trim();
+        }
+        catch (Exception e) {
+            systemipaddress = "Cannot Execute Properly";
+        }
+        System.out.println("Public IP Address: " + systemipaddress + "\n");
+
+
+		// https://github.com/Azure/AKS/blob/2022-03-27/vhd-notes/aks-ubuntu/AKSUbuntu-1804/2022.03.23.txt
+		// Telnet & Netcat look installed on the AKS nodes
+		Runtime runtime = Runtime.getRuntime();
+		try {
+			Process process =runtime.exec("telnet petcliasc.mysql.database.azure.com 3306");
+			System.out.println( "SUCCESSFULLY executed Telnet");
+        }
+        catch (Exception e) {
+			System.err.println( "Cannot Execute Telnet");
+        }
+
+		try {
+			Process process =runtime.exec("nc -vz petcliasc.mysql.database.azure.com 3306");
+			System.out.println( "SUCCESSFULLY executed Netcat");
+        }
+        catch (Exception e) {
+			System.err.println("Cannot Execute Netcat");
+        }
+
 
 		SpringApplication.run(VetsServiceApplication.class, args);
 	}
