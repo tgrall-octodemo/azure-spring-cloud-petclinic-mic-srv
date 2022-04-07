@@ -118,6 +118,18 @@ resource fwRuleClientIPAddress 'Microsoft.DBforMySQL/flexibleServers/firewallRul
 
  // /!\ SECURITY Risk: Allow ANY HOST for local Dev/Test only
  /*
+ // Allow public access from any Azure service within Azure to this server
+ // This option configures the firewall to allow connections from IP addresses allocated to any Azure service or asset,
+ // including connections from the subscriptions of other customers.
+ resource fwRuleAllowAnyHost 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2021-05-01' = {
+  name: 'Allow Any Host'
+  parent: mysqlserver
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
  resource fwRuleAllowAnyHost 'Microsoft.DBforMySQL/flexibleServers/firewallRules@2021-05-01' = {
   name: 'Allow Any Host'
   parent: mysqlserver
