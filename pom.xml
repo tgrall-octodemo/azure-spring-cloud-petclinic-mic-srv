@@ -33,6 +33,7 @@
         <assertj.version>3.17.1</assertj.version>
         <lombok.version>1.18.22</lombok.version>
 
+        <spring-cloud-azure.version>4.0.0</spring-cloud-azure.version>
         <spring-boot.version>2.6.3</spring-boot.version>
         <spring-cloud.version>2021.0.0</spring-cloud.version>
         <chaos-monkey-spring-boot.version>2.3.10</chaos-monkey-spring-boot.version>
@@ -70,6 +71,16 @@
                 <version>${assertj.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- Azure Key Vault -->
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>${spring-cloud-azure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -219,12 +230,24 @@
                 </property>
             </activation>
             <dependencies>
-                <!-- Azure Key Vault -->
+                <!-- Azure Key Vault 
+                https://search.maven.org/search?q=a:azure-keyvault-secrets-spring-boot-starter
+                
                 <dependency>
                     <groupId>com.microsoft.azure</groupId>
                     <artifactId>azure-keyvault-secrets-spring-boot-starter</artifactId>
-                    <version>2.3.0</version>
+                    <version>3.0.0-beta.1</version>
                 </dependency>
+                -->
+
+                <!-- Azure Key Vault : https://microsoft.github.io/spring-cloud-azure/docs/4.0.0-beta.2/reference/html/index.html#dependency-setup-3 
+                https://search.maven.org/search?q=a:spring-cloud-azure-starter-keyvault-secrets
+                -->
+                <dependency>
+                    <groupId>com.azure.spring</groupId>
+                    <artifactId>spring-cloud-azure-starter-keyvault-secrets</artifactId>
+                </dependency>
+
             </dependencies>
         </profile>
 
