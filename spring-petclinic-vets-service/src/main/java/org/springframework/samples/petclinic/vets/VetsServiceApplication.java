@@ -25,6 +25,8 @@ import java.net.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.apache.commons.net.telnet.TelnetClient;
+
 /**
  * @author Maciej Szarlinski
  */
@@ -61,7 +63,8 @@ public class VetsServiceApplication {
 
 
 		// https://github.com/Azure/AKS/blob/2022-03-27/vhd-notes/aks-ubuntu/AKSUbuntu-1804/2022.03.23.txt
-		// Telnet & Netcat look installed on the AKS nodes
+		// Telnet & Netcat look installed on the AKS nodes, but not on the App container
+		/*
 		Runtime runtime = Runtime.getRuntime();
 		try {
 			Process process =runtime.exec("telnet petcliasc.mysql.database.azure.com 3306");
@@ -78,6 +81,17 @@ public class VetsServiceApplication {
         }
         catch (Exception e) {
 			System.err.println("Cannot Execute Netcat");
+			e.printStackTrace();
+        }
+		*/
+		TelnetClient telnetClient = new TelnetClient();
+		try {
+			telnetClient.connect("petcliasc.mysql.database.azure.com", 3306);
+			System.out.println( "SUCCESSFULLY executed TelnetClient");
+			telnetClient.disconnect();
+        }
+        catch (Exception e) {
+			System.err.println("Cannot Execute TelnetClient");
 			e.printStackTrace();
         }
 

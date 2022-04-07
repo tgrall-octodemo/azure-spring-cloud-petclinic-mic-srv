@@ -118,6 +118,13 @@
             <artifactId>chaos-monkey-spring-boot</artifactId>
         </dependency>
 
+        <!-- Telnet test -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
