@@ -33,7 +33,7 @@ env:
 
   # https://docs.spring.io/spring-boot/docs/1.2.0.M1/reference/html/boot-features-profiles.html
   # customize this
-  DEPLOYMENT_JVM_OPTIONS: -Dazure.keyvault.uri=https://kv-petcliasc42.vault.azure.net -Xms512m -Xmx1024m  -Dspring.profiles.active=mysql,cloud # --spring.profiles.active=mysql,key-vault,cloud
+  DEPLOYMENT_JVM_OPTIONS: -Dazure.keyvault.uri=https://kv-petcliasc42.vault.azure.net -Xms512m -Xmx1024m  -Dspring.profiles.active=mysql,docker,cloud # --spring.profiles.active=mysql,key-vault,cloud
   AZURE_KEYVAULT_ENDPOINT: https://kv-petcliasc42.vault.azure.net
 
   DEPLOYMENT_VERSION: 2.6.3
