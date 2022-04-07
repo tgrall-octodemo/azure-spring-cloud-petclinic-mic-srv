@@ -772,6 +772,24 @@ Read :
 - []()
 
 ### Prepare secrets in your Key Vault
+
+Read those doc/samples below :
+- [https://github.com/Azure-Samples/azure-spring-boot-samples/tree/spring-cloud-azure_4.0.0/keyvault/spring-cloud-azure-starter-keyvault-secrets](https://github.com/Azure-Samples/azure-spring-boot-samples/tree/spring-cloud-azure_4.0.0/keyvault/spring-cloud-azure-starter-keyvault-secrets)
+- [https://microsoft.github.io/spring-cloud-azure/docs/4.0.0-beta.2/reference/html/index.html#secret-management](https://microsoft.github.io/spring-cloud-azure/docs/4.0.0-beta.2/reference/html/index.html#secret-management)
+
+The Config-server uses the config declared on the repo at [https://github.com/ezYakaEagle442/spring-petclinic-microservices-config/blob/main/application.yml](https://github.com/ezYakaEagle442/spring-petclinic-microservices-config/blob/main/application.yml) and need a Service Principal to be able to read secrets from KeyVault.
+  'Key Vault Administrator'
+  'Key Vault Reader'
+  'Key Vault Secrets User' 
+
+```bash
+az ad sp create-for-rbac --role "Key Vault Reader" --scopes /subscriptions/${SUBSCRIPTION}/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.KeyVault/vaults/<KEY_VAULT>  > git-cnf-spn.txt
+```
+
+Then the KV access policies must be set to allow the above SPN to access your KV. This should be set already in Azure Bicep.
+
+
+
 If you do not have a Key Vault yet, run the following commands to provision a Key Vault:
 ```bash
     az keyvault create --name ${KEY_VAULT} -g ${RESOURCE_GROUP}
