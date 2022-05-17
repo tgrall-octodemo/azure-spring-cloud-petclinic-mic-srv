@@ -1,5 +1,6 @@
 name: Build & Deploy to Azure Spring Cloud with Key Vault
-on: [push]
+on: 
+  workflow_dispatch:
 
 ###################################################################################################################
 #

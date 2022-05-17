@@ -1,5 +1,7 @@
 name: Build to Azure Spring Cloud with Key Vault and Upload the jar Arfifacts
-on: [push]
+on: 
+ # push:
+ workflow_dispatch:
 
 ###################################################################################################################
 #
